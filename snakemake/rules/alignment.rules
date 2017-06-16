@@ -1,0 +1,46 @@
+# Snakemake rules for read alignment
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 21-10-2016
+# Last changed: 06-12-2016
+
+# Read alignment using bowtie2        
+# Note: We discard unmapped reads.
+rule bowtie2_pe:
+    input:
+        idx = IDX,
+        reads = lambda wildcards: expand(join(config["fastqdir"], "{file}"), \
+            file = config["units"][wildcards.sample]),
+        qc = lambda wildcards: expand(join(config["fastqcdir"], "{file}"), \
+            file = [w.replace(".fastq.gz", "_fastqc.zip") for w in config["units"][wildcards.sample]])
+    output:
+        join(config["bamdir"], config["refseq"]["id"], "{sample}.bam")
+    log:
+        expand("logs/bowtie2_{ref}_{sample}.log", \
+            ref = config["refseq"]["id"], \
+            sample = "{sample}")
+    params:
+        cmd      = config["bowtie2"]["cmd"],
+        ref      = re.sub(".fa", "", REF),
+        in_fmt   = config["bowtie2"]["in_fmt"],
+        phred    = config["bowtie2"]["phred"],
+        maxins   = config["bowtie2"]["maxins"],
+        mismatch = config["bowtie2"]["mismatch"],
+        threads  = config["bowtie2"]["threads"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} \
+            {params.phred} \
+            --no-mixed \
+            --no-discordant \
+            --maxins {params.maxins} \
+            -N {params.mismatch} \
+            --threads {params.threads} \
+            -x {params.ref} \
+            -1 {input.reads[0]} \
+            -2 {input.reads[1]} \
+            2> {log} \
+            | samtools view -bS -F4 - > {output}
+        """

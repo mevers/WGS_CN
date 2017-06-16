@@ -1,0 +1,24 @@
+---
+__default__ :
+        queue : "all.q,hugemem.q"
+        virtual_free: "24G"
+        h_vmem: "25G"
+        threads : 2
+        outstream: "/dev/null"
+        errorstream: "/dev/null"
+
+bowtie2_pe :
+        queue: "hugemem.q"
+        threads : 8
+
+deeptools_bamCoverage :
+        queue: "hugemem.q"
+        threads: 12
+        virtual_free: "32G"
+        h_vmem: "33G"
+
+create_qualimap_report :
+        queue: "hugemem.q"
+        virtual_free: "24G"
+        h_vmem: "25G"
+        threads: 1

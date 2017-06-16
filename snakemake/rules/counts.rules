@@ -1,0 +1,42 @@
+# Snakemake rules for count estimation
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 13-12-2016
+# Last changed: 13-12-2016
+
+
+# Convert narrowPeaks BED file to GTF
+rule convert_narrowPeaks_to_GTF:
+    input:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{name}/{name}_peaks.narrowPeak")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{name}/{name}_peaks.gtf")
+    log:
+    params:
+        cmd = config["bed_to_gtf"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+           {params.cmd} \
+           {input} > {output}
+        """
+
+        
+# Run featureCounts
+#rule counts_narrowPeaks:
+#    input:
+#        ChIP = expand(join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam"), \
+#            sample = config["samples"]["{name}"]["CTCF"]),
+#        BED = join(config["analysisdir"], config["refseq"]["id"], "MACS/{name}/{name}_peaks.arrowPeak")
+#    output:
+#        join(config["analysisdir"], config["refseq"]["id"], "counts/counts_{sample}.tsv")
+#    log:
+#    params:
+#        cmd      = config["featureCounts"]["cmd"]        
+#    version: "1.0"
+#    shell:
+#        """
+#           {params.cmd} \
+#           
+#        """

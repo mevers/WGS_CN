@@ -1,0 +1,367 @@
+# Snakemake rules for ChIP-seq peak calling
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 23-10-2016
+# Last changed: 06-12-2016
+
+
+# Function to get median insert size
+# Note: This uses the bash script get_median_insert_size.sh
+# which parses a picard-tools CollectInsertSizeMetrics output file
+def get_median_insert_size(wildcards):
+    import subprocess
+    script_cmd = "scripts/get_median_insert_size.sh"
+    file = "insert_size/insert_size_" + wildcards.sample + ".txt"
+    filepath = join(config["analysisdir"], config["refseq"]["id"], file)
+    d = subprocess.check_output([script_cmd, filepath])
+    return(int(d))
+
+
+# Function to get number of mapped reads
+# Note: This uses the bash script get_number_mapped_reads.sh
+# which parses a samtools flagstat output file
+def get_number_mapped_reads(wildcards):
+    import subprocess
+    script_cmd = "scripts/get_number_mapped_reads.sh"
+    file = "flagstat/flagstat_" + wildcards.sample + ".txt"
+    filepath = join(config["analysisdir"], config["refseq"]["id"], file)
+    N = subprocess.check_output([script_cmd, filepath])
+    return(int(N))
+
+
+
+# Run macs2
+rule macs2_find_narrow_peaks:
+    input:
+        ChIP = lambda wildcards: expand(join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam"), \
+            sample = config["samples"][wildcards.name]["PolI"]),
+        ctrl = lambda wildcards: expand(join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam"), \
+            sample = config["samples"][wildcards.name]["control"])
+    output:
+        expand(join(config["analysisdir"], config["refseq"]["id"], "MACS/{{name}}/{{name}}_{type}"), \
+            type = ["peaks.narrowPeak", "peaks.xls", "summits.bed"])
+    log:
+        expand("logs/macs2_find_narrow_peaks_{ref}_{name}.log", \
+            ref = config["refseq"]["id"], \
+            name = "{name}")   
+    params:
+        cmd = config["macs2"]["cmd"],
+        gsize = config["macs2"]["gsize"],
+        qvalue = config["macs2"]["qvalue"],
+        outdir = join(config["analysisdir"], config["refseq"]["id"], "MACS/{name}")
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} callpeak \
+            -t {input.ChIP} \
+            -c {input.ctrl} \
+            -f BAMPE \
+            -g {params.gsize} \
+            --outdir {params.outdir} \
+            -n {wildcards.name} \
+            -m 5 50 \
+            -q {params.qvalue} &> {log} \
+        """
+
+
+rule merge_peaks:
+    input:
+        expand(join(config["analysisdir"], config["refseq"]["id"], "MACS/{name}/{name}_peaks.narrowPeak"), \
+            name = config["samples"].keys())
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/merged_peaks.bed")
+    params:
+        cmd = config["bedtools"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            cat {input} | sort -k1,1 -k2,2n | {params.cmd} merge -i stdin > {output}
+        """
+
+
+        
+# Step 1: Remove duplicates from BAM file and store in BED file
+# Note: We must use -o and --outdir, because if -o
+# refers to a non-existing path, the file won't be created.
+# --outdir ensures that the correct directory exists.
+# Note: The default behaviour (--keep-dup auto) makes macs2
+# calculate the maximum number of reads at the exact same location
+# based on a binomial distribution using a p = 1e-5 cutoff.
+rule macs2_filter_dupes:
+    input: 
+        join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}_filterdup.bed")
+    log:
+        "logs/macs2_filter_dupes_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"],
+        gsize = config["macs2"]["gsize"],
+        outdir = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}")
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} filterdup \
+            -i {input} \
+            -f BAM \
+            -g {params.gsize} \
+            --outdir {params.outdir}\
+            -o {wildcards.sample}_filterdup.bed &> {log} \
+        """
+
+    
+# Step 2: Determine fragment length d
+# Note: We skip this step and use picard-tools CollectInsertSizeMetrics instead
+rule macs2_determine_fragment_length:
+    input:
+        join("analysis/MACS", "{run}/{sample}_filterdup.bed") 
+    output:
+        "analysis/MACS/{run}/{sample}_fraglength.txt"
+    log:
+        "logs/macs2_determine_d_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"],
+        gsize = config["macs2"]["gsize"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} predictd \
+            -f BED \
+            -i {input} \
+            -g {params.gsize} \
+            -m 2 1000
+        """
+        
+# Step 3: Generate a pileup track for every ChIP sample and save in BEDGRAPH file
+# Note: This rule applies only to the ChIP samples and not the control samples
+rule macs2_pileup:
+    input:
+        metrics = join(config["analysisdir"], config["refseq"]["id"], "insert_size/insert_size_{sample}.txt"),
+        sample = join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/tmp/{sample}.ChIP.pileup.bdg")
+    log:
+        "logs/macs2_pileup_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"],
+        outdir = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/tmp"),
+        extsize = lambda wildcards: get_median_insert_size(wildcards)
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} pileup \
+            -f BAM \
+            -i {input.sample} \
+            --outdir {params.outdir} \
+            -o {wildcards.sample}.ChIP.pileup.bdg \
+            --extsize {params.extsize}
+        """
+        
+# Step 4a: Build local bias track from control: The d background
+rule macs2_d_background:
+    input:
+        metrics = join(config["analysisdir"], config["refseq"]["id"], "insert_size/insert_size_{sample}.txt"),
+        sample = join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.d_bg.bdg")
+    log:
+        "logs/macs2_d_bg_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"],
+        outdir = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}"),
+        extsize = lambda wildcards: get_median_insert_size(wildcards)
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} pileup \
+            -f BAM \
+            -i {input.sample} \
+            --outdir {params.outdir} \
+            -o {wildcards.sample}.dedup.d_bg.bdg \
+            -B \
+            --extsize $(({params.extsize} / 2))
+        """
+
+# Step 4b: Build local bias track from control: The slocal background
+rule macs2_1k_background:
+    input:
+        sample = join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.1k_bg.bdg")
+    log:
+        "logs/macs2_1k_bg_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"],
+        outdir = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}")
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} pileup \
+            -f BAM \
+            -i {input.sample} \
+            --outdir {params.outdir} \
+            -o {wildcards.sample}.dedup.1k_bg.bdg \
+            --extsize 500
+        """
+
+# Step 4c: Build local bias track from control: The llocal background
+rule macs2_10k_background:
+    input:
+        sample = join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.10k_bg.bdg")
+    log:
+        "logs/macs2_10k_bg_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"],
+        outdir = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}")
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} pileup \
+            -f BAM \
+            -i {input.sample} \
+            --outdir {params.outdir} \
+            -o {wildcards.sample}.dedup.10k_bg.bdg \
+            --extsize 5000
+        """
+
+# Step 5a: Normalise slocal background
+rule macs2_norm_1k_background:
+    input:
+        metrics = join(config["analysisdir"], config["refseq"]["id"], "insert_size/insert_size_{sample}.txt"),
+        sample = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.1k_bg.bdg")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.1k_bg_norm.bdg")
+    log:
+        "logs/macs2_1k_bg_norm_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"],
+        extsize = lambda wildcards: get_median_insert_size(wildcards)
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} bdgopt \
+            -i {input.sample} \
+            -m multiply \
+            -o {output} \
+            -p $(({params.extsize} / 1000))
+        """
+
+# Step 5b: Normalise llocal background
+rule macs2_norm_10k_background:
+    input:
+        metrics = join(config["analysisdir"], config["refseq"]["id"], "insert_size/insert_size_{sample}.txt"),
+        sample = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.10k_bg.bdg")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.10k_bg_norm.bdg")
+    log:
+        "logs/macs2_10k_bg_norm_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"],
+        extsize = lambda wildcards: get_median_insert_size(wildcards)
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} bdgopt \
+            -i {input.sample} \
+            -m multiply \
+            -o {output} \
+            -p $(({params.extsize} / 10000))
+        """
+
+# Step 6a: Combine slocal and llocal background
+rule macs2_combine_background_1k_10k:
+    input:
+        bg_1k = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.1k_bg_norm.bdg"),
+        bg_10k = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.10k_bg_norm.bdg")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.1k_10k_bg.bdg")
+    log:
+        "logs/macs2_combine_1k_10k_bg_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} bdgcmp \
+            -m max \
+            -t {input.bg_1k} \
+            -c {input.bg_10k} \
+            -o {output} \
+        """
+
+# Step 6b: Combine slocal+llocal and d background
+rule macs2_combine_background_1k_10k_d:
+    input:
+        bg_d = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.d_bg.bdg"),
+        bg_1k_10k = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.1k_10k_bg.bdg")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.1k_10k_d_bg.bdg")
+    log:
+        "logs/macs2_combine_1k_10k_d_bg_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} bdgcmp \
+            -m max \
+            -t {input.bg_1k_10k} \
+            -c {input.bg_d} \
+            -o {output} \
+        """
+
+# Step 6c: Combine slocal+llocal+d and genome background
+rule macs2_combine_background_1k_10k_d_genome:
+    input:
+        metrics1 = join(config["analysisdir"], config["refseq"]["id"], "flagstat/flagstat_{sample}.txt"),
+        metrics2 = join(config["analysisdir"], config["refseq"]["id"], "insert_size/insert_size_{sample}.txt"),
+        bg_1k_10k_d = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.1k_10k_d_bg.bdg")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.local_bias_raw.bdg")
+    log:
+        "logs/macs2_combine_1k_10k_d_genome_bg_{sample}.log"
+    params:
+        cmd = config["macs2"]["cmd"],
+        extsize = lambda wildcards: get_median_insert_size(wildcards),
+        nreads = lambda wildcards: get_number_mapped_reads(wildcards),
+        gsize = config["macs2"]["gsize"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} bdgopt \
+            -i {input.bg_1k_10k_d} \
+            -m max \
+            -p `perl -le 'print {params.nreads} * {params.extsize} / {params.gsize}'` \
+            -o {output} \
+        """
+        
+# Step 7: Scale ChIP and control
+#rule macs2_scale_bg:
+#    input:
+#        metrics1 = join(config["analysisdir"], config["refseq"]["id"], "flagstat/flagstat_{sample}.txt"),
+#        metrics2 = lambda wildcards: expand(join(config["analysisdir"], \
+#            config["refseq"]["id"], \
+#            "flagstat/flagstat_{sample}.txt"), \
+#            file = config["samples"][wildcards.run]["CTCF"],
+#        bg = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.local_bias_raw.bdg"),
+#        ChIP = join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.dedup.pileup.bdg")
+#
+#    output:
+#        join(config["analysisdir"], config["refseq"]["id"], "MACS/{run}/{sample}.local_lambda.bdg")
+#    log:
+#        "logs/macs2_10k_bg_norm_{sample}.log"
+#    params:
+#        cmd = config["macs2"]["cmd"],
+#        scale = lambda wildcards: get_number_mapped_reads(wildcards)
+#    version: "1.0"
+#    shell:
+#        """
+#            {params.cmd} bdgopt \
+#            -i {input.bg} \
+#            -m multiply \
+#            -o {output} \
+#            -p $(({params.scale} / 10000))
+#        """

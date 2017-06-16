@@ -1,0 +1,27 @@
+# Snakemake rules for copying to/from ANU MHS
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 24-10-2016
+# Last changed: 20-02-2017
+
+
+localrules:
+    copy_data_from_MHS
+
+# Copy files from MHS to local directory
+# Note: This requires the directory structure
+# <run>/<sample>/<file.fastq.gz>
+rule copy_data_from_MHS:
+    input:
+        file = join("/home/mevers/mhs_data/HannanLab/NAS/data_Diesch/ChIP-seq", "{run}/{sample}/{file}")
+    output:
+        join(config["fastqdir"], "{run}/{sample}/{file}")
+    params:
+        cmd = "scripts/copy_file_from_mhs.sh",
+        dir = join(config["fastqdir"], "{run}/{sample}")
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} {input} {params.dir}
+        """

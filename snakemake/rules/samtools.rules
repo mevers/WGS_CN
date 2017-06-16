@@ -1,0 +1,72 @@
+# Snakemake rules involving samtools
+# http://samtools.sourceforge.net
+#
+# Note: This rule file should be included in bam.rules.
+# Global variables (e.g. directory paths) should be declared in
+# bam.rules and are passed down to the individual tool rule files!
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 22-10-2016
+# Last changed: 16-03-2017
+
+
+# Sort and index BAM file
+# Note: samtools sort changed its way to specify commandline
+# options from version <=0.1.19 to 1.x
+# This will potentially break the workflow if run on a machine
+# with samtools other than 1.x
+rule samtools_sort_and_index:
+    input:
+        join(config["bamdir"], config["refseq"]["id"], "{sample}.bam")
+    output:
+        join(config["bamdir"], config["refseq"]["id"], \
+            "{sample}.sorted.bam"),
+        join(config["bamdir"], config["refseq"]["id"], \
+            "{sample}.sorted.bam.bai")
+    version: "1.0"
+    params:
+        cmd = config["samtools"]["cmd"]        
+    shell:
+        """
+            {params.cmd} sort -o {output[0]} {input};
+            {params.cmd} index {output[0]};
+        """
+
+
+# Remove duplicates using samtools rmdup
+rule samtools_rmdup_and_index:
+    input:
+        join(config["analysisdir"], config["refseq"]["id"], \
+            "picard-tools/dupes/{sample}_markedDupes.bam")
+    output:
+        join(config["bamdir"], config["refseq"]["id"], \
+            "{sample}.sorted.dedup.bam"),
+        join(config["bamdir"], config["refseq"]["id"], \
+            "{sample}.sorted.dedup.bam.bai")
+    params:
+        cmd = config["samtools"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} rmdup {input} {output[0]};
+            {params.cmd} index {output[0]}
+        """
+
+
+# Calculate and store statistics using samtools flagstat
+rule flagstat_bam:
+    input:
+        join(config["bamdir"], config["refseq"]["id"], "{sample}.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], \
+            "samtools/flagstat/flagstat_{sample}.txt")
+    params:
+        cmd = config["samtools"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} flagstat {input} > {output}
+        """
+
+        

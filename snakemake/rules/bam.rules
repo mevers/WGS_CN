@@ -1,0 +1,154 @@
+# Snakemake rules to process BAM files
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 22-10-2016
+# Last changed: 16-03-2017
+
+
+# Include individual tool rule files
+include: "samtools.rules"
+include: "picard-tools.rules"
+include: "qualimap.rules"
+
+
+# Estimate coverage using bedtools
+# We need this for the detailed MACS2 peak analysis
+rule bedtools_coverage:
+    input:
+        join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "coverage/coverage_{sample}.bed")
+    params:
+        cmd = config["bedtools"]["cmd"],
+        ref = REF
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} genomecov \
+            -ibam {input} \
+            -d \
+            -g {params.ref} > {output}
+        """
+        
+        
+# deeptools multiBamSummary
+rule deeptools_multiBamSummary_genome:
+    input:
+        expand(join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam"), \
+               sample = config["units"].keys())
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "deeptools/multiBamSummary_results_10kb.npz")
+    params:
+        cmd = config["deeptools"]["multiBamSummary"]["cmd"],
+        binsize = config["deeptools"]["multiBamSummary"]["binsize"],
+        labels = expand("{sample}", sample = config["units"].keys())
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} bins \
+            --bamfiles {input} \
+            -out {output} \
+            --labels {params.labels} \
+            --binSize {params.binsize}
+        """
+
+# deeptools multiBamSummary peaks only
+rule deeptools_multiBamSummary_peaks:
+    input:
+        BAM = expand(join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam"), \
+               sample = config["units"].keys()),
+        BED = join(config["analysisdir"], config["refseq"]["id"], "MACS/merged_peaks.bed")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "deeptools/multiBamSummary_results_peaks.npz")
+    params:
+        cmd = config["deeptools"]["multiBamSummary"]["cmd"],
+        labels = expand("{sample}", sample = config["units"].keys())
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} BED-file \
+            --BED {input.BED} \
+            --bamfiles {input.BAM} \
+            -out {output} \
+            --labels {params.labels}
+        """
+
+        
+# deeptools plotCorrelation
+rule deeptools_plotCorrelation:
+    input:
+        file = join(config["analysisdir"], config["refseq"]["id"], "deeptools/multiBamSummary_results_{src}.npz")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "deeptools/plotCorrelation_heatmap_{src}.pdf")
+    params:
+        cmd = config["deeptools"]["plotCorrelation"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} \
+            --corData {input.file} \
+            --plotFile {output} \
+            --corMethod spearman \
+            --whatToPlot heatmap \
+            --skipZeros \
+            --plotTitle "Spearman correlation of read counts in {wildcards.src}" \
+            --removeOutliers \
+            --plotNumbers \
+            --colorMap RdBu \
+            --zMin -1 \
+            --zMax +1
+        """
+
+
+# deeptools plotFingerprint
+rule deeptools_plotFingerprint:
+    input:
+        expand(join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam"), \
+            sample = config["units"].keys())
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], "deeptools/plotFingerprint_0.5kb.pdf")
+    params:
+        cmd = config["deeptools"]["plotFingerprint"]["cmd"],
+        binsize = config["deeptools"]["plotFingerprint"]["binsize"],
+        labels = expand("{sample}", sample = config["units"].keys())
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} \
+            --bamfiles {input} \
+            --plotFile {output} \
+            --ignoreDuplicates \
+            --labels {params.labels} \
+            --binSize {params.binsize} \
+            --skipZeros \
+            --plotTitle "Fingerprints of different samples"
+        """
+
+
+# deeptools bamCoverage
+rule deeptools_bamCoverage:
+    input:
+        join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], \
+            "deeptools/coverage_{sample}_RPKM_bw{binwidth}.bw")
+    log:
+        expand("logs/deeptools_coverage_{ref}_{{sample}}_RPKM_bw{{binwidth}}.log", \
+            ref = config["refseq"]["id"])
+    params:
+        cmd = config["deeptools"]["bamCoverage"]["cmd"],
+        binsize = "{binwidth}"
+#        binsize = config["deeptools"]["bamCoverage"]["binsize"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} \
+            --bam {input} \
+            --outFileName {output} \
+            --outFileFormat bigwig \
+            --binSize {params.binsize} \
+            --normalizeUsingRPKM \
+            --ignoreDuplicates > {log}
+        """
+    

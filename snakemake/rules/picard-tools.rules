@@ -1,0 +1,60 @@
+# Snakemake rules involving picard-tools
+# https://broadinstitute.github.io/picard/
+#
+# Note: This rule file should be included in bam.rules.
+# Global variables (e.g. directory paths) should be declared in
+# bam.rules and are passed down to the individual tool rule files!
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 22-10-2016
+# Last changed: 16-03-2017
+
+
+# Mark duplicates using Picard tools
+rule mark_duplicates:
+    input:
+        join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], \
+            "picard-tools/dupes/{sample}_markedDupes.bam"),
+        join(config["analysisdir"], config["refseq"]["id"], \
+            "picard-tools/dupes/{sample}_metrics.txt")
+    log:
+        "logs/picard-tools_MarkDuplicates_{sample}.log"
+    params:
+        cmd = config["picard"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} MarkDuplicates \
+            I={input} \
+            O={output[0]} \
+            M={output[1]} 2> {log}
+        """
+
+
+# Estimate insert size using Picard tools
+# Note: This only makes sense for paired-end reads
+rule estimate_insert_size:
+    input:
+        join(config["bamdir"], config["refseq"]["id"], "{sample}.bam")
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], \
+            "picard-tools/insert_size/insert_size_{sample}.txt"),
+        join(config["analysisdir"], config["refseq"]["id"], \
+            "picard-tools/insert_size/insert_size_{sample}.pdf")
+    log:
+        "logs/picard-tools_CollectInsertSizeMetrics_{sample}.log"
+    params:
+        cmd = config["picard"]["cmd"],
+        ref = REF
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} CollectInsertSizeMetrics \
+            I={input} \
+            H={output[1]} \
+            O={output[0]} 2> {log}
+        """
+

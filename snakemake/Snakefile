@@ -1,0 +1,100 @@
+# Snakemake workflow for the analysis of ChIP-seq data
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 14-10-2016
+# Last changed: 16-03-2017
+
+from os.path import join
+import re
+import glob
+
+def message(mes):
+  sys.stderr.write("|--- " + mes + "\n")
+
+#######################################################
+################## Global variables ###################
+#######################################################
+
+# Config files
+configfile: "config.yaml"
+
+# Working directory
+workdir: config["basedir"]
+
+#######################################################
+######################### Targets #####################
+#######################################################
+
+# Reference sequence
+REF = join(config["refdir"], config["refseq"]["id"], config["refseq"]["filename"])
+
+# bowtie2 index
+IDX = expand(re.sub("fa", "{idx}.bt2l", REF), idx = range(1,5))
+
+# FASTQ targets
+ALL_FASTQ = expand(join(config["fastqdir"], "{unit}"), \
+    unit = sum(config["units"].values(), []))
+
+# FASTQC targets
+ALL_FASTQC = expand(join(config["fastqcdir"], "{unit}_fastqc.zip"), \
+    unit = [w.replace(".fastq.gz", "") for w in sum(config["units"].values(), [])])
+
+# BAM targets: sorted and sorted+deduped BAM files plus indices
+ALL_BAM = expand(join(config["bamdir"], config["refseq"]["id"], "{sample}.{suf}"), \
+    sample = config["units"].keys(),
+    suf = ["bam", "sorted.bam", "sorted.bam.bai", "sorted.dedup.bam", "sorted.dedup.bam.bai"])
+
+TMP_BAM = expand(join(config["analysisdir"], config["refseq"]["id"], "picard-tools/dupes/{sample}_markedDupes.bam"), \
+     sample = config["units"].keys())
+
+# BAM QC targets
+BAM_FLAGSTAT = expand(join(config["analysisdir"], config["refseq"]["id"], \
+                           "samtools/flagstat/flagstat_{sample}{src}.txt"), \
+     sample = config["units"].keys(),
+     src = [".sorted", ".sorted.dedup"])
+BAM_INSERT_SIZE = expand(join(config["analysisdir"], config["refseq"]["id"], \
+    "picard-tools/insert_size/insert_size_{sample}{step}.{suf}"), \
+    sample = config["units"].keys(), \
+    step = [".sorted", ".sorted.dedup"], \
+    suf = ["txt", "pdf"])
+ALL_BAM_QC = BAM_FLAGSTAT + BAM_INSERT_SIZE
+
+# deepTools targets
+DT_COR = expand(join(config["analysisdir"], config["refseq"]["id"], "deeptools/plotCorrelation_heatmap{suf}.pdf"),
+     suf = ["_10kb", "_peaks"])
+DT_FP = expand(join(config["analysisdir"], config["refseq"]["id"], "deeptools/plotFingerprint{suf}.pdf"),
+     suf = ["_0.5kb"])
+DT_COV = expand(join(config["analysisdir"], config["refseq"]["id"], "deeptools/coverage_{sample}_RPKM_bw{binwidth}.bw"),
+     sample = config["units"].keys(),
+     binwidth = config["deeptools"]["bamCoverage"]["binsize"])
+DT_ALL = DT_COR + DT_FP + DT_COV
+
+
+for smp in ALL_FASTQ:
+    message("Sample " + smp + " will be created")
+
+
+
+#######################################################
+###################### Includes #######################
+#######################################################
+
+#include: "rules/mhs_data.rules"
+include: "rules/reference.rules"
+include: "rules/qc.rules"
+include: "rules/alignment.rules"
+include: "rules/bam.rules"
+
+
+#######################################################
+######################## Rules ########################
+#######################################################
+
+# Input fastq files
+rule all:
+    input:
+        ALL_FASTQC + ALL_BAM_QC
+#          ALL_BAM_QC + ALL_MACS,
+#          DT_ALL,
+#          QUALIMAP,

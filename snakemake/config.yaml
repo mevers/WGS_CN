@@ -1,0 +1,119 @@
+# Directories
+basedir: ".."
+refdir: "ref/"
+fastqdir: "rawData/"
+fastqcdir: "rawData/QC/"
+bamdir: "alignment/"
+analysisdir: "analysis/"
+
+# Samples
+# Note: Sample values have to match unit keys
+# Generally there is one control per run, but there may
+# (or may not) be multiple replicates for the ChIP library
+samples:
+        - Z38
+        - TOV
+
+# Units
+# Note: Unit keys have to match sample values
+units:
+        Z38:
+                - Z38/Z38_CTTGTA_L002_R1_001.fastq.gz
+                - Z38/Z38_CTTGTA_L002_R2_001.fastq.gz
+        TOV:
+                - TOV/TOV-112D_GCCAAT_L002_R1_001.fastq.gz
+                - TOV/TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+
+#
+refseq:
+    id: "GRCh38+rDNA_repeat"
+    filename: "GRCh38+rDNA_repeat.fa"
+
+
+# fastqc parameters
+fastqc:
+    cmd: "fastqc"
+
+
+# bbduk.sh parameters
+bbduk:
+    cmd: "bbduk.sh"
+    mem: "-Xmx1g"
+    ref: "rawData/truseq.fa"
+    ktrim: "r"
+    hdist: 1
+    qtrim: "l"
+    trimq: 20
+    minlength: 18
+
+
+# bowtie2-build parameters
+bowtie2-build:
+    cmd: "bowtie2-build"
+
+
+# bowtie2 parameters
+bowtie2:
+    cmd: "bowtie2"
+    in_fmt: "-q"
+    phred: "--phred33"
+    maxins: 500
+    mismatch: 0
+    threads: 6
+
+
+# samtools parameters
+samtools:
+    cmd: "samtools"
+
+
+# picard parameters
+picard:
+    cmd: "java -jar ~/Programs/picard.jar"
+
+
+# QualiMap parameters
+qualimap:
+    cmd: "~/Programs/qualimap_v2.2.1/qualimap"
+
+
+# bedtools parameters
+bedtools:
+    cmd: "bedtools"
+
+
+# deeptools parameters
+deeptools:
+    multiBamSummary:
+        cmd: "~/miniconda3/envs/py27/bin/multiBamSummary"
+        exclude: "fibroblast"
+        binsize: 10000
+    plotCorrelation:
+        cmd: "~/miniconda3/envs/py27/bin/plotCorrelation"
+    plotFingerprint:
+        cmd: "~/miniconda3/envs/py27/bin/plotFingerprint"
+        binsize: 500
+    bamCoverage:
+        cmd: "~/miniconda3/envs/py27/bin/bamCoverage"
+        binsize: [10, 100, 1000]
+
+
+# MACS2 parameters
+# Note: Even though macs2 accepts gsize = mm, gsize needs
+# to be a numeric for further downstream bash maths
+macs2:
+    cmd: "~/miniconda3/envs/py27/bin/macs2"
+    gsize: 1.87e9
+#    gsize: 45306
+    qvalue: 0.01
+
+
+# BED to GTF conversion
+bed_to_gtf:
+    cmd: "./scripts/bed2gtf.pl"
+
+
+# featureCounts parameters
+featuresCounts:
+    cmd: "featureCounts"
+#    annot:

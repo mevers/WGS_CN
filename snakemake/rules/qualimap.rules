@@ -1,0 +1,52 @@
+# Snakemake rules involving QualiMap
+# http://qualimap.bioinfo.cipf.es/
+#
+# Note: This rule file should be included in bam.rules.
+# Global variables (e.g. directory paths) should be declared in
+# bam.rules and are passed down to the individual tool rule files!
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 17-03-2017
+# Last changed: 17-03-2017
+
+
+# Create sample summary for QualiMap
+rule create_qualimap_sample_summary:
+    input:
+        "snakemake/config.yaml",
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], \
+             "qualimap/qualimap_sample_summary.tsv")
+    log:
+        "logs/qualimap_generate_sample_summary.log"
+    params:
+        cmd = "perl scripts/generate_qualimap_sample_summary.pl",
+        dir = join(config["bamdir"], config["refseq"]["id"])
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} {input} {params.dir} {output} 1> {log}
+        """
+
+        
+rule create_qualimap_report:
+    input:
+        join(config["analysisdir"], config["refseq"]["id"], \
+            "qualimap/qualimap_sample_summary.tsv"),
+        expand(join(config["bamdir"], config["refseq"]["id"], \
+            "{sample}.sorted.bam"), sample = config["units"].keys())
+    output:
+        join(config["analysisdir"], config["refseq"]["id"], \
+             "qualimap/multisampleBamQcReport.html")
+    log:
+        "logs/qualimap_multi-bamqc.log"
+    params:
+        cmd = config["qualimap"]["cmd"],
+        outdir = join(config["analysisdir"], config["refseq"]["id"], "qualimap")
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} multi-bamqc -d {input[0]} -r \
+            -outdir {params.outdir} 1> {log}
+        """

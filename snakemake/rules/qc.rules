@@ -1,0 +1,26 @@
+# Snakemake rules for quality control
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 21-10-2016
+# Last changed: 15-06-2017
+
+
+# Quality control using FASTQC
+rule fastqc:
+    input:
+        join(config["fastqdir"], "{sample}/{file}.fastq.gz")
+    output:
+        join(config["fastqcdir"], "{sample}/{file}_fastqc.zip")
+    threads: 1
+    params:
+        cmd = config["fastqc"]["cmd"],
+        out = join(config["fastqcdir"], "{sample}")
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} \
+            -f fastq \
+            -o {params.out} \
+            {input}
+        """
