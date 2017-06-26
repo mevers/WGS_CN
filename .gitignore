@@ -1,0 +1,14 @@
+.snakemake
+
+# Alignment files
+alignment/
+
+# Raw FASTQ files
+rawData/TOV/
+rawData/Z38/
+
+# Analysis
+analysis/
+
+# Reference
+ref/

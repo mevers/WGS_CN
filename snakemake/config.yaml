@@ -24,10 +24,15 @@ units:
                 - TOV/TOV-112D_GCCAAT_L002_R1_001.fastq.gz
                 - TOV/TOV-112D_GCCAAT_L002_R2_001.fastq.gz
 
-#
+
 refseq:
     id: "GRCh38+rDNA_repeat"
     filename: "GRCh38+rDNA_repeat.fa"
+
+
+#refseq:
+#    id: "rDNA_repeat"
+#    filename: "rDNA_repeat_U13369.1.fa"
 
 
 # fastqc parameters

@@ -1,0 +1,11 @@
+PASS	Basic Statistics	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+PASS	Per base sequence quality	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+PASS	Per sequence quality scores	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+WARN	Per base sequence content	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+PASS	Per base GC content	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+WARN	Per sequence GC content	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+PASS	Per base N content	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+PASS	Sequence Length Distribution	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+PASS	Sequence Duplication Levels	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+PASS	Overrepresented sequences	TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+WARN	Kmer Content	TOV-112D_GCCAAT_L002_R2_001.fastq.gz

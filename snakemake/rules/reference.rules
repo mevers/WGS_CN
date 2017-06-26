@@ -7,7 +7,7 @@
 
 localrules:
     download_ref_from_GenBank
-    
+
 # Download reference sequence from GenBank
 #rule download_ref_from_GenBank:
 #    input:
@@ -20,18 +20,34 @@ localrules:
 #    version: "1.0"
 #    shell:
 #        """
-#            {params.cmd} {params.acc} {output} 
+#            {params.cmd} {params.acc} {output}
 #        """
 
 
 # Download reference sequence from Ensembl
 #rule download_ref_from_Ensembl:
 
-        
+
+# Make fasta index
+rule make_fasta_index:
+    input:
+        REF
+    output:
+        REF.replace("fa", "fa.fai")
+    params:
+        cmd = config["samtools"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} faidx {input}
+        """
+
+
 # Make bowtie2 index
 rule make_bowtie2_index:
     input:
-        REF
+        REF,
+        REF.replace("fa", "fa.fai")
     output:
         IDX
     log:

@@ -1,0 +1,7 @@
+[Sat Jun 17 12:04:56 AEST 2017] picard.analysis.CollectInsertSizeMetrics HISTOGRAM_FILE=analysis/rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.pdf INPUT=alignment/rDNA_repeat/Z38.sorted.bam OUTPUT=analysis/rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.txt    DEVIATIONS=10.0 MINIMUM_PCT=0.05 METRIC_ACCUMULATION_LEVEL=[ALL_READS] INCLUDE_DUPLICATES=false ASSUME_SORTED=true STOP_AFTER=0 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json
+[Sat Jun 17 12:04:56 AEST 2017] Executing as mevers@compute-5-0.local on Linux 2.6.32-504.16.2.el6.x86_64 amd64; Java HotSpot(TM) 64-Bit Server VM 1.8.0_91-b14; Picard version: 2.7.1-SNAPSHOT
+INFO	2017-06-17 12:04:58	RExecutor	Executing R script via command: Rscript /tmp/mevers/script5711189210024145589.R /home/mevers/Projects/CN_WGS/analysis/rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.txt /home/mevers/Projects/CN_WGS/analysis/rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.pdf Z38.sorted.bam
+INFO	2017-06-17 12:04:58	ProcessExecutor	null device 
+INFO	2017-06-17 12:04:58	ProcessExecutor	          1 
+[Sat Jun 17 12:04:58 AEST 2017] picard.analysis.CollectInsertSizeMetrics done. Elapsed time: 0.04 minutes.
+Runtime.totalMemory()=2058354688

@@ -30,7 +30,7 @@ workdir: config["basedir"]
 REF = join(config["refdir"], config["refseq"]["id"], config["refseq"]["filename"])
 
 # bowtie2 index
-IDX = expand(re.sub("fa", "{idx}.bt2l", REF), idx = range(1,5))
+IDX = expand(re.sub("fa", "{idx}.bt2", REF), idx = range(1,5))
 
 # FASTQ targets
 ALL_FASTQ = expand(join(config["fastqdir"], "{unit}"), \
@@ -71,8 +71,14 @@ DT_COV = expand(join(config["analysisdir"], config["refseq"]["id"], "deeptools/c
 DT_ALL = DT_COR + DT_FP + DT_COV
 
 
-for smp in ALL_FASTQ:
-    message("Sample " + smp + " will be created")
+QUALIMAP1 = join(config["analysisdir"], config["refseq"]["id"], "qualimap/multisampleBamQcReport.html")
+QUALIMAP2 = expand(join(config["analysisdir"], config["refseq"]["id"], "qualimap/{sample}/qualimapReport.html"),
+     sample = config["units"].keys())
+
+
+
+#for smp in ALL_FASTQ:
+#    message("Sample " + smp + " will be created")
 
 
 
@@ -94,7 +100,7 @@ include: "rules/bam.rules"
 # Input fastq files
 rule all:
     input:
-        ALL_FASTQC + ALL_BAM_QC
+        ALL_FASTQC, ALL_BAM_QC
 #          ALL_BAM_QC + ALL_MACS,
 #          DT_ALL,
 #          QUALIMAP,
