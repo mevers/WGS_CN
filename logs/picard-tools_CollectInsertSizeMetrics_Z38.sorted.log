@@ -1,7 +1,55 @@
-[Sat Jun 17 12:04:56 AEST 2017] picard.analysis.CollectInsertSizeMetrics HISTOGRAM_FILE=analysis/rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.pdf INPUT=alignment/rDNA_repeat/Z38.sorted.bam OUTPUT=analysis/rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.txt    DEVIATIONS=10.0 MINIMUM_PCT=0.05 METRIC_ACCUMULATION_LEVEL=[ALL_READS] INCLUDE_DUPLICATES=false ASSUME_SORTED=true STOP_AFTER=0 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json
-[Sat Jun 17 12:04:56 AEST 2017] Executing as mevers@compute-5-0.local on Linux 2.6.32-504.16.2.el6.x86_64 amd64; Java HotSpot(TM) 64-Bit Server VM 1.8.0_91-b14; Picard version: 2.7.1-SNAPSHOT
-INFO	2017-06-17 12:04:58	RExecutor	Executing R script via command: Rscript /tmp/mevers/script5711189210024145589.R /home/mevers/Projects/CN_WGS/analysis/rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.txt /home/mevers/Projects/CN_WGS/analysis/rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.pdf Z38.sorted.bam
-INFO	2017-06-17 12:04:58	ProcessExecutor	null device 
-INFO	2017-06-17 12:04:58	ProcessExecutor	          1 
-[Sat Jun 17 12:04:58 AEST 2017] picard.analysis.CollectInsertSizeMetrics done. Elapsed time: 0.04 minutes.
-Runtime.totalMemory()=2058354688
+[Mon Jun 26 22:13:06 AEST 2017] picard.analysis.CollectInsertSizeMetrics HISTOGRAM_FILE=analysis/GRCh38+rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.pdf INPUT=alignment/GRCh38+rDNA_repeat/Z38.sorted.bam OUTPUT=analysis/GRCh38+rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.txt    DEVIATIONS=10.0 MINIMUM_PCT=0.05 METRIC_ACCUMULATION_LEVEL=[ALL_READS] INCLUDE_DUPLICATES=false ASSUME_SORTED=true STOP_AFTER=0 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json
+[Mon Jun 26 22:13:06 AEST 2017] Executing as mevers@compute-5-3.local on Linux 2.6.32-504.16.2.el6.x86_64 amd64; Java HotSpot(TM) 64-Bit Server VM 1.8.0_91-b14; Picard version: 2.7.1-SNAPSHOT
+INFO	2017-06-26 22:13:10	SinglePassSamProgram	Processed     1,000,000 records.  Elapsed time: 00:00:03s.  Time for last 1,000,000:    3s.  Last read position: 1:79,901,224
+INFO	2017-06-26 22:13:14	SinglePassSamProgram	Processed     2,000,000 records.  Elapsed time: 00:00:07s.  Time for last 1,000,000:    3s.  Last read position: 1:143,185,159
+INFO	2017-06-26 22:13:17	SinglePassSamProgram	Processed     3,000,000 records.  Elapsed time: 00:00:10s.  Time for last 1,000,000:    3s.  Last read position: 1:165,612,862
+INFO	2017-06-26 22:13:21	SinglePassSamProgram	Processed     4,000,000 records.  Elapsed time: 00:00:14s.  Time for last 1,000,000:    3s.  Last read position: 1:212,444,873
+INFO	2017-06-26 22:13:24	SinglePassSamProgram	Processed     5,000,000 records.  Elapsed time: 00:00:17s.  Time for last 1,000,000:    3s.  Last read position: 2:8,420,877
+INFO	2017-06-26 22:13:27	SinglePassSamProgram	Processed     6,000,000 records.  Elapsed time: 00:00:20s.  Time for last 1,000,000:    3s.  Last read position: 2:54,903,304
+INFO	2017-06-26 22:13:31	SinglePassSamProgram	Processed     7,000,000 records.  Elapsed time: 00:00:23s.  Time for last 1,000,000:    3s.  Last read position: 2:103,027,561
+INFO	2017-06-26 22:13:34	SinglePassSamProgram	Processed     8,000,000 records.  Elapsed time: 00:00:27s.  Time for last 1,000,000:    3s.  Last read position: 2:147,204,830
+INFO	2017-06-26 22:13:37	SinglePassSamProgram	Processed     9,000,000 records.  Elapsed time: 00:00:30s.  Time for last 1,000,000:    3s.  Last read position: 2:189,242,862
+INFO	2017-06-26 22:13:40	SinglePassSamProgram	Processed    10,000,000 records.  Elapsed time: 00:00:33s.  Time for last 1,000,000:    3s.  Last read position: 2:233,729,514
+INFO	2017-06-26 22:13:44	SinglePassSamProgram	Processed    11,000,000 records.  Elapsed time: 00:00:37s.  Time for last 1,000,000:    4s.  Last read position: 3:60,343,910
+INFO	2017-06-26 22:13:50	SinglePassSamProgram	Processed    12,000,000 records.  Elapsed time: 00:00:43s.  Time for last 1,000,000:    5s.  Last read position: 3:131,241,694
+INFO	2017-06-26 22:13:55	SinglePassSamProgram	Processed    13,000,000 records.  Elapsed time: 00:00:48s.  Time for last 1,000,000:    4s.  Last read position: 4:5,156,578
+INFO	2017-06-26 22:13:58	SinglePassSamProgram	Processed    14,000,000 records.  Elapsed time: 00:00:51s.  Time for last 1,000,000:    3s.  Last read position: 4:78,762,803
+INFO	2017-06-26 22:14:03	SinglePassSamProgram	Processed    15,000,000 records.  Elapsed time: 00:00:56s.  Time for last 1,000,000:    5s.  Last read position: 4:146,139,537
+INFO	2017-06-26 22:14:08	SinglePassSamProgram	Processed    16,000,000 records.  Elapsed time: 00:01:01s.  Time for last 1,000,000:    5s.  Last read position: 5:19,038,271
+INFO	2017-06-26 22:14:11	SinglePassSamProgram	Processed    17,000,000 records.  Elapsed time: 00:01:04s.  Time for last 1,000,000:    2s.  Last read position: 5:90,518,773
+INFO	2017-06-26 22:14:14	SinglePassSamProgram	Processed    18,000,000 records.  Elapsed time: 00:01:07s.  Time for last 1,000,000:    2s.  Last read position: 5:160,603,905
+INFO	2017-06-26 22:14:17	SinglePassSamProgram	Processed    19,000,000 records.  Elapsed time: 00:01:10s.  Time for last 1,000,000:    2s.  Last read position: 6:48,539,476
+INFO	2017-06-26 22:14:21	SinglePassSamProgram	Processed    20,000,000 records.  Elapsed time: 00:01:13s.  Time for last 1,000,000:    3s.  Last read position: 6:96,146,894
+INFO	2017-06-26 22:14:26	SinglePassSamProgram	Processed    21,000,000 records.  Elapsed time: 00:01:19s.  Time for last 1,000,000:    5s.  Last read position: 6:140,284,380
+INFO	2017-06-26 22:14:30	SinglePassSamProgram	Processed    22,000,000 records.  Elapsed time: 00:01:23s.  Time for last 1,000,000:    4s.  Last read position: 7:18,422,524
+INFO	2017-06-26 22:14:33	SinglePassSamProgram	Processed    23,000,000 records.  Elapsed time: 00:01:26s.  Time for last 1,000,000:    2s.  Last read position: 7:86,048,266
+INFO	2017-06-26 22:14:36	SinglePassSamProgram	Processed    24,000,000 records.  Elapsed time: 00:01:29s.  Time for last 1,000,000:    2s.  Last read position: 7:148,086,025
+INFO	2017-06-26 22:14:39	SinglePassSamProgram	Processed    25,000,000 records.  Elapsed time: 00:01:32s.  Time for last 1,000,000:    2s.  Last read position: 8:67,457,594
+INFO	2017-06-26 22:14:42	SinglePassSamProgram	Processed    26,000,000 records.  Elapsed time: 00:01:35s.  Time for last 1,000,000:    2s.  Last read position: 8:130,208,986
+INFO	2017-06-26 22:14:45	SinglePassSamProgram	Processed    27,000,000 records.  Elapsed time: 00:01:37s.  Time for last 1,000,000:    2s.  Last read position: 9:63,413,606
+INFO	2017-06-26 22:14:50	SinglePassSamProgram	Processed    28,000,000 records.  Elapsed time: 00:01:42s.  Time for last 1,000,000:    4s.  Last read position: 9:137,272,871
+INFO	2017-06-26 22:14:55	SinglePassSamProgram	Processed    29,000,000 records.  Elapsed time: 00:01:48s.  Time for last 1,000,000:    5s.  Last read position: 10:45,241,220
+INFO	2017-06-26 22:15:00	SinglePassSamProgram	Processed    30,000,000 records.  Elapsed time: 00:01:53s.  Time for last 1,000,000:    4s.  Last read position: 10:115,458,306
+INFO	2017-06-26 22:15:03	SinglePassSamProgram	Processed    31,000,000 records.  Elapsed time: 00:01:56s.  Time for last 1,000,000:    3s.  Last read position: 11:49,000,565
+INFO	2017-06-26 22:15:06	SinglePassSamProgram	Processed    32,000,000 records.  Elapsed time: 00:01:59s.  Time for last 1,000,000:    2s.  Last read position: 11:127,793,954
+INFO	2017-06-26 22:15:09	SinglePassSamProgram	Processed    33,000,000 records.  Elapsed time: 00:02:02s.  Time for last 1,000,000:    2s.  Last read position: 12:44,531,689
+INFO	2017-06-26 22:15:12	SinglePassSamProgram	Processed    34,000,000 records.  Elapsed time: 00:02:04s.  Time for last 1,000,000:    2s.  Last read position: 12:94,709,342
+INFO	2017-06-26 22:15:15	SinglePassSamProgram	Processed    35,000,000 records.  Elapsed time: 00:02:08s.  Time for last 1,000,000:    3s.  Last read position: 13:44,575,726
+INFO	2017-06-26 22:15:20	SinglePassSamProgram	Processed    36,000,000 records.  Elapsed time: 00:02:13s.  Time for last 1,000,000:    4s.  Last read position: 13:109,334,874
+INFO	2017-06-26 22:15:25	SinglePassSamProgram	Processed    37,000,000 records.  Elapsed time: 00:02:17s.  Time for last 1,000,000:    4s.  Last read position: 14:71,508,813
+INFO	2017-06-26 22:15:28	SinglePassSamProgram	Processed    38,000,000 records.  Elapsed time: 00:02:21s.  Time for last 1,000,000:    3s.  Last read position: 14:106,562,838
+INFO	2017-06-26 22:15:31	SinglePassSamProgram	Processed    39,000,000 records.  Elapsed time: 00:02:24s.  Time for last 1,000,000:    2s.  Last read position: 15:80,256,521
+INFO	2017-06-26 22:15:34	SinglePassSamProgram	Processed    40,000,000 records.  Elapsed time: 00:02:27s.  Time for last 1,000,000:    2s.  Last read position: 16:46,398,870
+INFO	2017-06-26 22:15:37	SinglePassSamProgram	Processed    41,000,000 records.  Elapsed time: 00:02:30s.  Time for last 1,000,000:    2s.  Last read position: 17:17,512,204
+INFO	2017-06-26 22:15:41	SinglePassSamProgram	Processed    42,000,000 records.  Elapsed time: 00:02:34s.  Time for last 1,000,000:    3s.  Last read position: 17:71,265,378
+INFO	2017-06-26 22:15:44	SinglePassSamProgram	Processed    43,000,000 records.  Elapsed time: 00:02:37s.  Time for last 1,000,000:    3s.  Last read position: 18:52,259,153
+INFO	2017-06-26 22:15:47	SinglePassSamProgram	Processed    44,000,000 records.  Elapsed time: 00:02:40s.  Time for last 1,000,000:    3s.  Last read position: 19:53,504,242
+INFO	2017-06-26 22:15:50	SinglePassSamProgram	Processed    45,000,000 records.  Elapsed time: 00:02:43s.  Time for last 1,000,000:    3s.  Last read position: 21:8,674,049
+INFO	2017-06-26 22:15:53	SinglePassSamProgram	Processed    46,000,000 records.  Elapsed time: 00:02:46s.  Time for last 1,000,000:    2s.  Last read position: 22:20,600,562
+INFO	2017-06-26 22:15:56	SinglePassSamProgram	Processed    47,000,000 records.  Elapsed time: 00:02:49s.  Time for last 1,000,000:    2s.  Last read position: X:86,426,138
+INFO	2017-06-26 22:15:59	SinglePassSamProgram	Processed    48,000,000 records.  Elapsed time: 00:02:52s.  Time for last 1,000,000:    3s.  Last read position: MT:6,806
+INFO	2017-06-26 22:16:03	RExecutor	Executing R script via command: Rscript /tmp/mevers/script7389868024391087352.R /home/mevers/Projects/CN_WGS/analysis/GRCh38+rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.txt /home/mevers/Projects/CN_WGS/analysis/GRCh38+rDNA_repeat/picard-tools/insert_size/insert_size_Z38.sorted.pdf Z38.sorted.bam
+INFO	2017-06-26 22:16:04	ProcessExecutor	null device 
+INFO	2017-06-26 22:16:04	ProcessExecutor	          1 
+[Mon Jun 26 22:16:04 AEST 2017] picard.analysis.CollectInsertSizeMetrics done. Elapsed time: 2.98 minutes.
+Runtime.totalMemory()=2119696384

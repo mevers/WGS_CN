@@ -1,0 +1,94 @@
+# Snakemake rules involving bedtools
+# http://bedtools.readthedocs.io/en/latest/
+#
+# Note: This rule file should be included in bam.rules.
+# Global variables (e.g. directory paths) should be declared in
+# bam.rules and are passed down to the individual tool rule files!
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 27-06-2017
+# Last changed: 27-06-2017
+
+
+# Estimate genome coverage
+# We need this for the detailed MACS2 peak analysis
+rule bedtools_genome_coverage:
+    input:
+        join(
+            config["bamdir"],
+            config["refseq"]["id"],
+            "{sample}.sorted.dedup.bam")
+    output:
+        join(
+            config["analysisdir"],
+            config["refseq"]["id"],
+            "coverage/coverage_{sample}.bed")
+    params:
+        cmd = config["bedtools"]["cmd"],
+        ref = REF
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} genomecov \
+            -ibam {input} \
+            -d \
+            -g {params.ref} > {output}
+        """
+
+
+# Divide genome into windows of size x by sliding them by dx
+rule divide_genome_sliding_window:
+    input:
+        REF.replace(".fa", "_genome.bed")
+    output:
+        expand(join(
+            config["analysisdir"],
+            config["refseq"]["id"],
+            "bedtools/genome_w{window}_s{step}.bed"),
+            window = config["bedtools"]["window_size"],
+            step = config["bedtools"]["window_step"])
+    params:
+        cmd = config["bedtools"]["cmd"],
+        window_size = config["bedtools"]["window_size"],
+        window_step = config["bedtools"]["window_step"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} makewindows \
+            -b {input} \
+            -w {params.window_size} \
+            -s {params.window_step} \
+            -i srcwinnum > {output}
+        """
+
+
+# Estimate coverage based on bed file
+# Note that the behaviour of bedtools coverage
+# has changed between bedtools versions 2.24 -> 2.25!
+# For details see here:
+# http://bedtools.readthedocs.io/en/latest/content/tools/coverage.html
+rule bedtools_coverage:
+    input:
+        BED = join(
+            config["analysisdir"],
+            config["refseq"]["id"],
+            "bedtools/{annot}.bed"),
+        BAM = join(
+            config["bamdir"],
+            config["refseq"]["id"],
+            "{sample}.sorted.bam")
+    output:
+        join(
+            config["analysisdir"],
+            config["refseq"]["id"],
+            "bedtools/cov_{annot}_{sample}.bed")
+    params:
+        cmd = config["bedtools"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} coverage \
+            -a {input.BED} \
+            -b {input.BAM} > {output}
+        """

@@ -60,6 +60,15 @@ BAM_INSERT_SIZE = expand(join(config["analysisdir"], config["refseq"]["id"], \
     suf = ["txt", "pdf"])
 ALL_BAM_QC = BAM_FLAGSTAT + BAM_INSERT_SIZE
 
+# BedTools
+REF_BED = expand(join(
+    config["analysisdir"],
+    config["refseq"]["id"],
+    "bedtools/cov_genome_w{window}_s{step}_{sample}.bed"),
+    window = config["bedtools"]["window_size"],
+    step = config["bedtools"]["window_step"],
+    sample = config["units"].keys())
+
 # deepTools targets
 DT_COR = expand(join(config["analysisdir"], config["refseq"]["id"], "deeptools/plotCorrelation_heatmap{suf}.pdf"),
      suf = ["_10kb", "_peaks"])
@@ -100,7 +109,7 @@ include: "rules/bam.rules"
 # Input fastq files
 rule all:
     input:
-        ALL_FASTQC, ALL_BAM_QC
+        ALL_FASTQC, ALL_BAM_QC, REF_BED
 #          ALL_BAM_QC + ALL_MACS,
 #          DT_ALL,
 #          QUALIMAP,

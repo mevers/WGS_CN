@@ -60,3 +60,18 @@ rule make_bowtie2_index:
         """
             {params.cmd} {input} {params.base} > {log}
         """
+
+
+# Make a genome BED file from fasta index
+rule make_bed_from_fasta_index:
+    input:
+        REF.replace("fa", "fa.fai")
+    output:
+        REF.replace(".fa", "_genome.bed")
+    params:
+        cmd = "perl scripts/fai2bed.pl"
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} {input} > {output}
+        """

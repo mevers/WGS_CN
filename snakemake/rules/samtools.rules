@@ -26,7 +26,7 @@ rule samtools_sort_and_index:
             "{sample}.sorted.bam.bai")
     version: "1.0"
     params:
-        cmd = config["samtools"]["cmd"]        
+        cmd = config["samtools"]["cmd"]
     shell:
         """
             {params.cmd} sort -o {output[0]} {input};
@@ -68,5 +68,3 @@ rule flagstat_bam:
         """
             {params.cmd} flagstat {input} > {output}
         """
-
-        

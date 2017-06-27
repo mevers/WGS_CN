@@ -3,35 +3,16 @@
 # Author: Maurits Evers
 # License: GPLv3
 # Original date: 22-10-2016
-# Last changed: 16-03-2017
+# Last changed: 27-06-2017
 
 
 # Include individual tool rule files
+include: "bedtools.rules"
 include: "samtools.rules"
 include: "picard-tools.rules"
 include: "qualimap.rules"
 
 
-# Estimate coverage using bedtools
-# We need this for the detailed MACS2 peak analysis
-rule bedtools_coverage:
-    input:
-        join(config["bamdir"], config["refseq"]["id"], "{sample}.sorted.dedup.bam")
-    output:
-        join(config["analysisdir"], config["refseq"]["id"], "coverage/coverage_{sample}.bed")
-    params:
-        cmd = config["bedtools"]["cmd"],
-        ref = REF
-    version: "1.0"
-    shell:
-        """
-            {params.cmd} genomecov \
-            -ibam {input} \
-            -d \
-            -g {params.ref} > {output}
-        """
-        
-        
 # deeptools multiBamSummary
 rule deeptools_multiBamSummary_genome:
     input:
@@ -74,7 +55,7 @@ rule deeptools_multiBamSummary_peaks:
             --labels {params.labels}
         """
 
-        
+
 # deeptools plotCorrelation
 rule deeptools_plotCorrelation:
     input:
@@ -151,4 +132,3 @@ rule deeptools_bamCoverage:
             --normalizeUsingRPKM \
             --ignoreDuplicates > {log}
         """
-    
