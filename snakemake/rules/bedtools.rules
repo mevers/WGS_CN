@@ -1,6 +1,13 @@
 # Snakemake rules involving bedtools
 # http://bedtools.readthedocs.io/en/latest/
 #
+# Beware: bedtools has changed significantly from version 2.24
+# and above. For example, bedtools coverage -a <a.bed> -b <b.bed>
+# determines the overlap of a relative b in version <=2.24, whereas
+# it determines the overlap of b relative to a in version >=2.25.
+# Furthermore, bam file input (instead of bed) is inconsistent,
+# and seems to have changed from version to version.
+#
 # Note: This rule file should be included in bam.rules.
 # Global variables (e.g. directory paths) should be declared in
 # bam.rules and are passed down to the individual tool rule files!
@@ -68,6 +75,8 @@ rule divide_genome_sliding_window:
 # has changed between bedtools versions 2.24 -> 2.25!
 # For details see here:
 # http://bedtools.readthedocs.io/en/latest/content/tools/coverage.html
+# We therefore use bedtools multicov, which is more flexible
+# regarding bam file input
 rule bedtools_coverage:
     input:
         BED = join(
@@ -88,7 +97,7 @@ rule bedtools_coverage:
     version: "1.0"
     shell:
         """
-            {params.cmd} coverage \
-            -a {input.BED} \
-            -b {input.BAM} > {output}
+            {params.cmd} multicov \
+            -bams {input.BAM} \
+            -bed {input.BED} > {output}
         """
