@@ -80,7 +80,7 @@ We assess variability in coverage using a sliding window approach.
 
 <li> We perform read alignment for whole genome sequencing data of samples TOV and Z38 against the reference genome.
 
-<li> We use a sliding window approach to estimate sequencing depth (coverage) across (1) the diploid DNA, (2) the rDNA repeat, and (3) the mitochondrial DNA. A sliding window approach is advantegeous because it will cause smoothing of regions with large deviation in coverage from uniformity. Here we use a window of width $w = 10\text{ kb}$ and a step size of $s = 1\text{ kb}$.
+<li> We use a sliding window approach to estimate sequencing depth (coverage) across (1) the diploid DNA, (2) the rDNA repeat, and (3) the mitochondrial DNA. A sliding window approach is advantageous because it will result in smoothing of regions with large deviations in coverage from uniformity. Here we use a window of width $w = 10\text{ kb}$ and a step size of $s = 1\text{ kb}$.
 </ol>
 
 
