@@ -5,7 +5,7 @@ date: "29/06/2017"
 output:
   ioslides_presentation:
     widescreen: true
-    smaller: true
+    smaller: false
     fig_width: 10.5
     fig_height: 5.5
     fig_caption: false
@@ -31,23 +31,164 @@ suppressMessages(library(ggplot2));      # For plotting
 suppressMessages(library(ggrepel));      # For avoiding overlapping labels in ggplot2
 suppressMessages(library(extrafont));    # For hrbrthemes fonts
 suppressMessages(library(hrbrthemes));   # For theme_ipsum_rc()
+suppressMessages(library(plotly));
 ```
 
-## General method
+## General method 1
 
-We infer ribosomal (rDNA) copy number from a comparison of read coverage across the rDNA repeat and across the diploid autosomal chromosomes.   
+We infer ribosomal (rDNA) copy number from a comparison of read coverage across the rDNA repeat and across the diploid autosomal chromosomes.
+
+The rDNA copy number is then given by
+<div style="font-size:80%">
+$$
+\text{CN}(\text{rDNA}) = 2\times\frac{\text{mean coverage}(\text{rDNA})}{\text{mean coverage}(\text{diploid DNA})}\,.
+$$
+</div>
+
+This is consistent with the approach to estimate mtDNA copy number from whole-genome sequencing data,
+<div style="font-size:80%">
+$$
+\text{CN}(\text{mtDNA}) = 2\times\frac{\text{mean coverage}(\text{mtDNA})}{\text{mean coverage}(\text{diploid DNA})}\,,
+$$
+</div>
+as discussed in [Qian et al., Bioinformatics 33, 1399 (2017)](https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btw835) and [Ding et al., PLoS Genet. 14, e1005306 (2015)](https://www.ncbi.nlm.nih.gov/pubmed/26172475).
+
+
+## General method 2
+
+We also obtain an estimate for the standard error of the copy number $se(\text{CN})$, which are based on the standard errors of the mean (sem) coverage of rDNA and diploid DNA.
+
+Specifically,
+<div style="font-size:80%">
+$$
+se(\text{CN}) = CN \times \sqrt{\left(\frac{\text{sem coverage(rDNA)}}{\text{mean coverage(rDNA)}}\right)^2 + \left(\frac{\text{sem coverage(diploid DNA)}}{\text{mean coverage(diploid DNA)}}\right)^2} 
+$$
+</div>
+
+We assess variability in coverage using a sliding window approach.
 
 
 ## Workflow
 
-1. We construct a reference genome consisting of
-   * all diploid autosomal chromosomes,
-   * chromosomes X and Y,
-   * the mtDNA reference sequence, and
-   * a single sequence copy of the canonical rDNA repeat unit.
+<ol start="1">
+<li> We construct a repeat-masked reference genome consisting of
+    
+* all diploid autosomal chromosomes ([Ensembl GRCh38.p10](http://www.ensembl.org/Homo_sapiens/Info/Index)),
+* chromosomes X and Y ([Ensembl GRCh38.p10](http://www.ensembl.org/Homo_sapiens/Info/Index)),
+* the mitochondrial DNA (mtDNA) ([Ensembl GRCh38.p10](http://www.ensembl.org/Homo_sapiens/Info/Index)), and
+* a single sequence copy of the canonical rDNA repeat unit ([U13369.1](https://www.ncbi.nlm.nih.gov/nuccore/555853)).
 
-2. We perform read alignment for whole genome sequencing data of samples TOV and Z38 against the reference genome.
+<li> We perform read alignment for whole genome sequencing data of samples TOV and Z38 against the reference genome.
 
-3. We use a sliding window approach to estimate sequencing depth (coverage) across (1) the diploid chromosomes, (2) the rDNA repeat, and (3) the mitochondrial DNA. The advantage A sliding window approach will lead to a smoothing of non-uniformity
+<li> We use a sliding window approach to estimate sequencing depth (coverage) across (1) the diploid DNA, (2) the rDNA repeat, and (3) the mitochondrial DNA. A sliding window approach is advantegeous because it will cause smoothing of regions with large deviation in coverage from uniformity. Here we use a window of width $w = 10\text{ kb}$ and a step size of $s = 1\text{ kb}$.
+</ol>
 
-Read alignment to reference genome consisting of all autosomal chromosomes, chromosome X, Y, and a single copy of mtDNA
+
+## Workflow -- continued
+
+<ol start="4">
+<li> We determine the mean and standard error of the mean coverage of (1) the diploid DNA, (2) the rDNA repeat, and (3) the mtDNA. For example:
+<div style="font-size:80%">
+$$
+\text{mean coverage(rDNA)} = \frac{1}{n}\sum_{i=1}^n \text{coverage(rDNA)}\,,
+$$
+$$
+\text{sem coverage(rDNA)} = \frac{\text{sd coverage(rDNA)}}{\sqrt{n}}\,,
+$$
+</div>
+where $n$ refers to the total number of windows of width $w$ and coverage $>1$.
+
+Note: We discard regions where $\text{coverage} = 0$. This is because we are working with a repeat-masked reference genome, where sequences of regions of repetitive DNA have been replaced with N's. This reduces the mappable reference genome space, and we correct for this effect by removing zero coverage regions.     
+</ol>
+
+
+## Copy number estimates
+
+```{r, echo=FALSE, dev.args = list(bg = "transparent")}
+fn <- c(
+  "CN_cov_genome_w10000_s1000_TOV_noZeros.RData", 
+  "CN_cov_genome_w10000_s1000_Z38_noZeros.RData");
+CN <- lapply(fn, function(x) {
+  load(x);
+  get("ret");
+});
+names(CN) <- gsub("(CN_cov_genome_w\\d+_s\\d+_|_noZeros|_noZeros|.RData)", "", fn);
+# Prepare for plotting
+meanCN <- lapply(CN, function(x) x$CN);
+df <- melt(meanCN, id.vars = c("what", "mean", "se"));
+
+# Plot
+gg <- ggplot(df, aes(x = L1, y = mean));
+gg <- gg + geom_bar(stat = "identity");
+gg <- gg + geom_errorbar(
+    aes(ymin = mean - se, ymax = mean + se),
+    width = 0.1);
+gg <- gg + geom_text(
+    aes(x = L1, y = mean/2, label = paste(round(mean), "\u00B1", round(se))),
+    colour = "white");
+gg <- gg + facet_wrap(~ what);
+gg <- gg + theme_ipsum_rc();
+gg <- gg + labs(x = "Sample", y = "CN");
+gg <- gg + theme(
+    strip.background = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    rect = element_rect(fill = "transparent"),
+    panel.background = element_rect(fill = "transparent"),
+    plot.background = element_rect(fill = "transparent", colour = NA),
+    legend.position = "bottom");
+gg;
+```
+
+
+# Appendix
+
+## Coverage TOV
+
+<p style="margin-top:-1em">  </p>
+<center><img src="figures/boxplot_cov_genome_w10000_s1000_TOV_noZeros.png" style="width:750px;"></center>
+
+
+## Coverage Z38
+
+<p style="margin-top:-1em">  </p>
+<center><img src="figures/boxplot_cov_genome_w10000_s1000_Z38_noZeros.png" style="width:750px;"></center>
+
+
+## Copy number estimates (including zero coverage) {-}
+
+```{r, echo=FALSE, dev.args = list(bg = "transparent")}
+fn <- c(
+  "CN_cov_genome_w10000_s1000_TOV_withZeros.RData", 
+  "CN_cov_genome_w10000_s1000_Z38_withZeros.RData");
+CN <- lapply(fn, function(x) {
+  load(x);
+  get("ret");
+});
+names(CN) <- gsub("(CN_cov_genome_w\\d+_s\\d+_|_noZeros|_withZeros|.RData)", "", fn);
+# Prepare for plotting
+meanCN <- lapply(CN, function(x) x$CN);
+df <- melt(meanCN, id.vars = c("what", "mean", "se"));
+
+# Plot
+gg <- ggplot(df, aes(x = L1, y = mean));
+gg <- gg + geom_bar(stat = "identity");
+gg <- gg + geom_errorbar(
+    aes(ymin = mean - se, ymax = mean + se),
+    width = 0.1);
+gg <- gg + geom_text(
+    aes(x = L1, y = mean/2, label = paste(round(mean), "\u00B1", round(se))),
+    colour = "white");
+gg <- gg + facet_wrap(~ what);
+gg <- gg + theme_ipsum_rc();
+gg <- gg + labs(x = "Sample", y = "CN");
+gg <- gg + theme(
+    strip.background = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    rect = element_rect(fill = "transparent"),
+    panel.background = element_rect(fill = "transparent"),
+    plot.background = element_rect(fill = "transparent", colour = NA),
+    legend.position = "bottom");
+gg;
+```
+
+
