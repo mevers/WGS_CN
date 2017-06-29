@@ -1,0 +1,53 @@
+---
+title: "Estimating ribosomal DNA copy number from whole-genome sequencing"
+author: "Maurits Evers"
+date: "29/06/2017"
+output:
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+    fig_width: 10.5
+    fig_height: 5.5
+    fig_caption: false
+    df_print: paged
+    toc: yes
+---
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  CommonHTML: {
+    scale: 130
+  }
+});
+</script>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE);
+
+suppressMessages(library(reshape2));     # For wide to long dataframe conversion
+suppressMessages(library(ggplot2));      # For plotting
+suppressMessages(library(ggrepel));      # For avoiding overlapping labels in ggplot2
+suppressMessages(library(extrafont));    # For hrbrthemes fonts
+suppressMessages(library(hrbrthemes));   # For theme_ipsum_rc()
+```
+
+## General method
+
+We infer ribosomal (rDNA) copy number from a comparison of read coverage across the rDNA repeat and across the diploid autosomal chromosomes.   
+
+
+## Workflow
+
+1. We construct a reference genome consisting of
+   * all diploid autosomal chromosomes,
+   * chromosomes X and Y,
+   * the mtDNA reference sequence, and
+   * a single sequence copy of the canonical rDNA repeat unit.
+
+2. We perform read alignment for whole genome sequencing data of samples TOV and Z38 against the reference genome.
+
+3. We use a sliding window approach to estimate sequencing depth (coverage) across (1) the diploid chromosomes, (2) the rDNA repeat, and (3) the mitochondrial DNA. The advantage A sliding window approach will lead to a smoothing of non-uniformity
+
+Read alignment to reference genome consisting of all autosomal chromosomes, chromosome X, Y, and a single copy of mtDNA

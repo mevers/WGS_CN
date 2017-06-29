@@ -85,8 +85,8 @@ qualimap:
 # bedtools parameters
 bedtools:
     cmd: "bedtools"
-    window_size: 1000
-    window_step: 100
+    window_size: 10000
+    window_step: 1000
 
 
 # deeptools parameters
