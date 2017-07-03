@@ -1,7 +1,7 @@
 ---
 title: "Estimating ribosomal DNA copy number from whole-genome sequencing"
 author: "Maurits Evers"
-date: "29/06/2017"
+date: "03/07/2017"
 output:
   ioslides_presentation:
     widescreen: true
