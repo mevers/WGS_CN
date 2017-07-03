@@ -36,6 +36,13 @@ IDX = expand(re.sub("fa", "{idx}.bt2", REF), idx = range(1,5))
 ALL_FASTQ = expand(join(config["fastqdir"], "{unit}"), \
     unit = sum(config["units"].values(), []))
 
+#ALL_FASTQ_SS = expand(join(
+#    config["fastqdir"],
+#    "{unit}_subN{Npairs}.fastq.gz"),
+#    unit = [w.replace(".fastq.gz", "") for w in sum(config["units"].values(), [])],
+#    Npairs = ["1000000", "2000000", "5000000", "10000000", "20000000", "50000000"])
+
+
 # FASTQC targets
 ALL_FASTQC = expand(join(config["fastqcdir"], "{unit}_fastqc.zip"), \
     unit = [w.replace(".fastq.gz", "") for w in sum(config["units"].values(), [])])
@@ -69,6 +76,12 @@ REF_BED = expand(join(
     step = config["bedtools"]["window_step"],
     sample = config["units"].keys())
 
+REF_BED2 = expand(join(
+    config["analysisdir"],
+    config["refseq"]["id"],
+    "bedtools/cov_genome_perbp_{sample}.bed"),
+    sample = config["units"].keys())
+
 # deepTools targets
 DT_COR = expand(join(config["analysisdir"], config["refseq"]["id"], "deeptools/plotCorrelation_heatmap{suf}.pdf"),
      suf = ["_10kb", "_peaks"])
@@ -86,7 +99,7 @@ QUALIMAP2 = expand(join(config["analysisdir"], config["refseq"]["id"], "qualimap
 
 
 
-#for smp in ALL_FASTQ:
+#for smp in ALL_FASTQ_SS:
 #    message("Sample " + smp + " will be created")
 
 
@@ -97,7 +110,7 @@ QUALIMAP2 = expand(join(config["analysisdir"], config["refseq"]["id"], "qualimap
 
 #include: "rules/mhs_data.rules"
 include: "rules/reference.rules"
-include: "rules/qc.rules"
+include: "rules/fastq.rules"
 include: "rules/alignment.rules"
 include: "rules/bam.rules"
 
@@ -109,7 +122,7 @@ include: "rules/bam.rules"
 # Input fastq files
 rule all:
     input:
-        ALL_FASTQC, ALL_BAM_QC, REF_BED
+        ALL_FASTQC, ALL_BAM_QC, REF_BED, REF_BED2
 #          ALL_BAM_QC + ALL_MACS,
 #          DT_ALL,
 #          QUALIMAP,
