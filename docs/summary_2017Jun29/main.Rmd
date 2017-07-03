@@ -31,7 +31,6 @@ suppressMessages(library(ggplot2));      # For plotting
 suppressMessages(library(ggrepel));      # For avoiding overlapping labels in ggplot2
 suppressMessages(library(extrafont));    # For hrbrthemes fonts
 suppressMessages(library(hrbrthemes));   # For theme_ipsum_rc()
-suppressMessages(library(plotly));
 ```
 
 ## General method 1
@@ -61,7 +60,7 @@ We also obtain an estimate for the standard error of the copy number $se(\text{C
 Specifically,
 <div style="font-size:80%">
 $$
-se(\text{CN}) = CN \times \sqrt{\left(\frac{\text{sem coverage(rDNA)}}{\text{mean coverage(rDNA)}}\right)^2 + \left(\frac{\text{sem coverage(diploid DNA)}}{\text{mean coverage(diploid DNA)}}\right)^2} 
+se(\text{CN}) = \text{CN} \times \sqrt{\left(\frac{\text{sem coverage(rDNA)}}{\text{mean coverage(rDNA)}}\right)^2 + \left(\frac{\text{sem coverage(diploid DNA)}}{\text{mean coverage(diploid DNA)}}\right)^2} 
 $$
 </div>
 
@@ -139,44 +138,29 @@ gg <- gg + theme(
 gg;
 ```
 
+## Comparison with fastMitoCalc 1
 
-# Appendix
+As an independent validation, we compare estimated mtDNA copy numbers with results from fastMitoCalc.
 
-## Coverage TOV
+References:
 
-<p style="margin-top:-1em">  </p>
-<center><img src="figures/boxplot_cov_genome_w10000_s1000_TOV_noZeros.png" style="width:750px;"></center>
+1. [Qian et al., Bioinformatics 33, 1399 (2017)](https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btw835)
+2. [Program website](https://lgsun.irp.nia.nih.gov/hsgu/software/mitoAnalyzer/index.html)
 
-
-## Coverage Z38
-
-<p style="margin-top:-1em">  </p>
-<center><img src="figures/boxplot_cov_genome_w10000_s1000_Z38_noZeros.png" style="width:750px;"></center>
+**Results suggest that inferred mtDNAcopy numbers are consistent with copy numbers estimated using existing methods. Consequently, inferred rDNA copy numbers are expected to be reasonable estimates.**
 
 
-## Copy number estimates (including zero coverage) {-}
+## Comparison with fastMitoCalc 2
 
-```{r, echo=FALSE, dev.args = list(bg = "transparent")}
-fn <- c(
-  "CN_cov_genome_w10000_s1000_TOV_withZeros.RData", 
-  "CN_cov_genome_w10000_s1000_Z38_withZeros.RData");
-CN <- lapply(fn, function(x) {
-  load(x);
-  get("ret");
-});
-names(CN) <- gsub("(CN_cov_genome_w\\d+_s\\d+_|_noZeros|_withZeros|.RData)", "", fn);
-# Prepare for plotting
-meanCN <- lapply(CN, function(x) x$CN);
-df <- melt(meanCN, id.vars = c("what", "mean", "se"));
-
-# Plot
+```{r echo=FALSE}
+df <- cbind.data.frame(
+  what = c("fastMitoCalc", "fastMitoCalc", "This work", "This work"),
+  L1 = c("TOV", "Z38", "TOV", "Z38"),
+  mean = c(1419, 2718, df[df$what == "MT", 2]));
 gg <- ggplot(df, aes(x = L1, y = mean));
 gg <- gg + geom_bar(stat = "identity");
-gg <- gg + geom_errorbar(
-    aes(ymin = mean - se, ymax = mean + se),
-    width = 0.1);
 gg <- gg + geom_text(
-    aes(x = L1, y = mean/2, label = paste(round(mean), "\u00B1", round(se))),
+    aes(x = L1, y = mean/2, label = round(mean)),
     colour = "white");
 gg <- gg + facet_wrap(~ what);
 gg <- gg + theme_ipsum_rc();
@@ -190,5 +174,71 @@ gg <- gg + theme(
     legend.position = "bottom");
 gg;
 ```
+
+
+# Appendix
+
+## Analysis workflow 1
+
+The full analysis workflow is maintained on github:
+
+[https://github.com/mevers/CN_WGS](https://github.com/mevers/CN_WGS)
+
+Please contact Maurits Evers [maurits.evers@anu.edu.au](mailto:maurits.evers@anu.edu.au) for access and instructions.
+
+
+## Summary of snakemake analysis workflow
+
+<p style="margin-top:-1em">  </p>
+<center><img src="figures/rulegraph.png" style="width:400px;"></center>
+
+## Coverage TOV
+
+<p style="margin-top:-1em">  </p>
+<center><img src="figures/boxplot_cov_genome_w10000_s1000_TOV_noZeros.png" style="width:750px;"></center>
+
+
+## Coverage Z38
+
+<p style="margin-top:-1em">  </p>
+<center><img src="figures/boxplot_cov_genome_w10000_s1000_Z38_noZeros.png" style="width:750px;"></center>
+
+
+<!-- ## Copy number estimates (including zero coverage) {-} -->
+
+<!-- ```{r, echo=FALSE, dev.args = list(bg = "transparent")} -->
+<!-- fn <- c( -->
+<!--   "CN_cov_genome_w10000_s1000_TOV_withZeros.RData",  -->
+<!--   "CN_cov_genome_w10000_s1000_Z38_withZeros.RData"); -->
+<!-- CN <- lapply(fn, function(x) { -->
+<!--   load(x); -->
+<!--   get("ret"); -->
+<!-- }); -->
+<!-- names(CN) <- gsub("(CN_cov_genome_w\\d+_s\\d+_|_noZeros|_withZeros|.RData)", "", fn); -->
+<!-- # Prepare for plotting -->
+<!-- meanCN <- lapply(CN, function(x) x$CN); -->
+<!-- df <- melt(meanCN, id.vars = c("what", "mean", "se")); -->
+
+<!-- # Plot -->
+<!-- gg <- ggplot(df, aes(x = L1, y = mean)); -->
+<!-- gg <- gg + geom_bar(stat = "identity"); -->
+<!-- gg <- gg + geom_errorbar( -->
+<!--     aes(ymin = mean - se, ymax = mean + se), -->
+<!--     width = 0.1); -->
+<!-- gg <- gg + geom_text( -->
+<!--     aes(x = L1, y = mean/2, label = paste(round(mean), "\u00B1", round(se))), -->
+<!--     colour = "white"); -->
+<!-- gg <- gg + facet_wrap(~ what); -->
+<!-- gg <- gg + theme_ipsum_rc(); -->
+<!-- gg <- gg + labs(x = "Sample", y = "CN"); -->
+<!-- gg <- gg + theme( -->
+<!--     strip.background = element_blank(), -->
+<!--     axis.text.x = element_text(angle = 45, hjust = 1), -->
+<!--     rect = element_rect(fill = "transparent"), -->
+<!--     panel.background = element_rect(fill = "transparent"), -->
+<!--     plot.background = element_rect(fill = "transparent", colour = NA), -->
+<!--     legend.position = "bottom"); -->
+<!-- gg; -->
+<!-- ``` -->
 
 
