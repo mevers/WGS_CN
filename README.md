@@ -2,16 +2,46 @@
 
 # Genome reference
 
+[Ensembl](ftp://ftp.ensembl.org/pub/release-89/fasta/homo_sapiens/dna/) provides the following two main genome assembly files.
+
 1. Homo_sapiens.GRCh38.dna_rm.toplevel.fa  
-    The toplevel assembly includes chromosomes, any unlocalised or unplaced scaffolds, and alternate sequences (alternate loci, fix patches, novel patches). This is the largest continuous sequence for an organism.
+    The *toplevel assembly* includes chromosomes, any unlocalised or unplaced scaffolds, and alternate sequences (alternate loci, fix patches, novel patches). This is the largest continuous sequence for an organism.
 2. Homo_sapiens.GRCh38.dna_rm.primary_assembly.fa  
-    The primary assembly includes chromosomes,  and any unlocalised or unplaced scaffolds. It does *not* include alternate sequences.
+    The *primary assembly* includes chromosomes, and any unlocalised or unplaced scaffolds. It does *not* include alternate sequences.
 
-For details, see [here](http://www.ensembl.org/info/website/glossary.html).
+For details, see [here](http://www.ensembl.org/info/website/glossary.html). All sequences with names KI* and GI* are unplaced scaffolds, see [here](https://github.com/dpryan79/ChromosomeMappings/blob/master/GRCh38_ensembl2UCSC.txt) for mapping their Ensembl names to UCSC names.
 
-We need to make sure to exclude any unlocalised, unplaced, and placed scaffolds, as they may contain (incomplete) sequences of the human rDNA repeat. For example, GL000220.1 seems to contain (parts of) the human rDNA repeat unit U13369.1.
+In the context of this work, we need to make sure to exclude any unlocalised, unplaced, and placed scaffolds, as they may contain (incomplete) sequences of the human rDNA repeat. For example, unplaced genomic contig/scaffold GL000220.1 seems to contain (parts of) the human rDNA repeat unit U13369.1. If we keep these unplaced scaffolds in the reference genome, read alignment may map rDNA-associated reads to these unplaced contigs instead of to the canonical rDNA copy.  
 
-Therefore we manually download all diploid chromosome sequences including X, Y and MT manually, and concatenate all sequence files including one copy of the U13369.1 rDNA sequence.
+Therefore we manually download all diploid autosomal chromosome sequences as well as the sequences of chromosomes X, Y, and MT manually, and manually concatenate all FASTA sequence files including one copy of the [U13369.1](https://www.ncbi.nlm.nih.gov/nuccore/555853) rDNA sequence. The resulting reference genome file has filename `GRCh38+rDNA_repeat.fa`, and the following index:
+```
+1	248956422	59	60	61
+2	242193529	253105814	60	61
+3	198295559	499335961	60	61
+4	190214555	700936505	60	61
+5	181538259	894321362	60	61
+6	170805979	1078885318	60	61
+7	159345973	1252538123	60	61
+8	145138636	1414539922	60	61
+9	138394717	1562097595	60	61
+10	133797422	1702798952	60	61
+11	135086622	1838826393	60	61
+12	133275309	1976164520	60	61
+13	114364328	2111661146	60	61
+14	107043718	2227931608	60	61
+15	101991189	2336759449	60	61
+16	90338345	2440450552	60	61
+17	83257441	2532294597	60	61
+18	80373285	2616939723	60	61
+19	58617616	2698652623	60	61
+20	64444167	2758247260	60	61
+21	46709983	2823765557	60	61
+22	50818468	2871254100	60	61
+X	156040895	2922919602	60	61
+Y	57227415	3081561243	60	61
+MT	16569	3139742506	60	61
+rDNA_repeat	42999	3139759365	70	71
+```
 
 
 # Coverage calculation
