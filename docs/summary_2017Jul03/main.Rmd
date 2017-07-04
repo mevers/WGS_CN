@@ -156,7 +156,7 @@ References:
 df <- cbind.data.frame(
   what = c("fastMitoCalc", "fastMitoCalc", "This work", "This work"),
   L1 = c("TOV", "Z38", "TOV", "Z38"),
-  mean = c(1419, 2718, df[df$what == "MT", 2]));
+  mean = c(1431, 2727, df[df$what == "MT", 2]));
 gg <- ggplot(df, aes(x = L1, y = mean));
 gg <- gg + geom_bar(stat = "identity");
 gg <- gg + geom_text(
