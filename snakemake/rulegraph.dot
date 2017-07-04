@@ -1,0 +1,38 @@
+digraph snakemake_dag {
+    graph[bgcolor=white, margin=0];
+    node[shape=box, style=rounded, fontname=sans,                 fontsize=10, penwidth=2];
+    edge[penwidth=2, color=grey];
+	0[label = "all", color = "0.44 0.6 0.85", style="rounded"];
+	1[label = "samtools_sort_and_index", color = "0.00 0.6 0.85", style="rounded"];
+	2[label = "fastqc", color = "0.08 0.6 0.85", style="rounded"];
+	3[label = "samtools_rmdup_and_index", color = "0.11 0.6 0.85", style="rounded"];
+	4[label = "bowtie2_pe", color = "0.53 0.6 0.85", style="rounded"];
+	5[label = "samtools_bedcov", color = "0.58 0.6 0.85", style="rounded"];
+	6[label = "divide_genome_sliding_window", color = "0.50 0.6 0.85", style="rounded"];
+	7[label = "make_fasta_index", color = "0.56 0.6 0.85", style="rounded"];
+	8[label = "estimate_CN", color = "0.14 0.6 0.85", style="rounded"];
+	9[label = "flagstat_bam", color = "0.28 0.6 0.85", style="rounded"];
+	10[label = "make_bowtie2_index", color = "0.03 0.6 0.85", style="rounded"];
+	11[label = "make_bed_from_fasta_index", color = "0.39 0.6 0.85", style="rounded"];
+	12[label = "estimate_insert_size", color = "0.31 0.6 0.85", style="rounded"];
+	13[label = "mark_duplicates", color = "0.17 0.6 0.85", style="rounded"];
+	12 -> 0
+	8 -> 0
+	9 -> 0
+	2 -> 0
+	4 -> 1
+	13 -> 3
+	10 -> 4
+	2 -> 4
+	3 -> 5
+	6 -> 5
+	11 -> 6
+	5 -> 8
+	1 -> 9
+	3 -> 9
+	7 -> 10
+	7 -> 11
+	1 -> 12
+	3 -> 12
+	1 -> 13
+}            

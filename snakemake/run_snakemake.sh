@@ -2,6 +2,7 @@
 
 snakemake --dag | dot -Tpdf > dag.pdf
 snakemake --rulegraph | dot -Tpdf > rulegraph.pdf
+snakemake --rulegraph > rulegraph.dot
 
 snakemake --configfile config.yaml \
 	  --snakefile Snakefile \
@@ -14,4 +15,3 @@ snakemake --configfile config.yaml \
                           -o {cluster.outstream} \
                           -e {cluster.errorstream}" \
           --cluster-config cluster.yaml
-

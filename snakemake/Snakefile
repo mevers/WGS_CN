@@ -52,9 +52,6 @@ ALL_BAM = expand(join(config["bamdir"], config["refseq"]["id"], "{sample}.{suf}"
     sample = config["units"].keys(),
     suf = ["bam", "sorted.bam", "sorted.bam.bai", "sorted.dedup.bam", "sorted.dedup.bam.bai"])
 
-TMP_BAM = expand(join(config["analysisdir"], config["refseq"]["id"], "picard-tools/dupes/{sample}_markedDupes.bam"), \
-     sample = config["units"].keys())
-
 # BAM QC targets
 BAM_FLAGSTAT = expand(join(config["analysisdir"], config["refseq"]["id"], \
                            "samtools/flagstat/flagstat_{sample}{src}.txt"), \
@@ -67,43 +64,16 @@ BAM_INSERT_SIZE = expand(join(config["analysisdir"], config["refseq"]["id"], \
     suf = ["txt", "pdf"])
 ALL_BAM_QC = BAM_FLAGSTAT + BAM_INSERT_SIZE
 
-# BedTools
-#REF_BED = expand(join(
-#    config["analysisdir"],
-#    config["refseq"]["id"],
-#    "bedtools/cov_genome_w{window}_s{step}_{sample}.bed"),
-#    window = config["bedtools"]["window_size"],
-#    step = config["bedtools"]["window_step"],
-#    sample = config["units"].keys())
-#
-#REF_BED = expand(join(
-#    config["analysisdir"],
-#    config["refseq"]["id"],
-#    "bedtools/cov_genome_perbp_{sample}.bed"),
-#    sample = config["units"].keys())
 
-REF_BED = expand(join(
+QUALIMAP1 = join(
     config["analysisdir"],
     config["refseq"]["id"],
-    "samtools/bedcov/cov_genome_w{window}_s{step}_{sample}.bed"),
-    window = config["bedtools"]["window_size"],
-    step = config["bedtools"]["window_step"],
+    "qualimap/multisampleBamQcReport.html")
+QUALIMAP2 = expand(join(
+    config["analysisdir"],
+    config["refseq"]["id"],
+    "qualimap/{sample}/qualimapReport.html"),
     sample = config["units"].keys())
-
-# deepTools targets
-DT_COR = expand(join(config["analysisdir"], config["refseq"]["id"], "deeptools/plotCorrelation_heatmap{suf}.pdf"),
-     suf = ["_10kb", "_peaks"])
-DT_FP = expand(join(config["analysisdir"], config["refseq"]["id"], "deeptools/plotFingerprint{suf}.pdf"),
-     suf = ["_0.5kb"])
-DT_COV = expand(join(config["analysisdir"], config["refseq"]["id"], "deeptools/coverage_{sample}_RPKM_bw{binwidth}.bw"),
-     sample = config["units"].keys(),
-     binwidth = config["deeptools"]["bamCoverage"]["binsize"])
-DT_ALL = DT_COR + DT_FP + DT_COV
-
-
-QUALIMAP1 = join(config["analysisdir"], config["refseq"]["id"], "qualimap/multisampleBamQcReport.html")
-QUALIMAP2 = expand(join(config["analysisdir"], config["refseq"]["id"], "qualimap/{sample}/qualimapReport.html"),
-     sample = config["units"].keys())
 
 
 R_CN = expand(join(
@@ -139,6 +109,3 @@ include: "rules/CN.rules"
 rule all:
     input:
         ALL_FASTQC, ALL_BAM_QC, R_CN
-#          ALL_BAM_QC + ALL_MACS,
-#          DT_ALL,
-#          QUALIMAP,
