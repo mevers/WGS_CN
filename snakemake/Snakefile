@@ -108,4 +108,4 @@ include: "rules/CN.rules"
 # Input fastq files
 rule all:
     input:
-        ALL_FASTQC, ALL_BAM_QC, R_CN
+        ALL_BAM_QC, R_CN

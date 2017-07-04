@@ -3,17 +3,24 @@
 # Author: Maurits Evers
 # License: GPLv3
 # Original date: 21-10-2016
-# Last changed: 06-12-2016
+# Last changed: 05-07-2016
 
-# Read alignment using bowtie2        
+# Read alignment using bowtie2
 # Note: We discard unmapped reads.
+# Note: We include fastqc files as a mandatory input to ensure that
+# QC was done _prior_ to read alignment.
 rule bowtie2_pe:
     input:
         idx = IDX,
-        reads = lambda wildcards: expand(join(config["fastqdir"], "{file}"), \
+        reads = lambda wildcards: expand(join(
+            config["fastqdir"],
+            "{file}"),
             file = config["units"][wildcards.sample]),
-        qc = lambda wildcards: expand(join(config["fastqcdir"], "{file}"), \
-            file = [w.replace(".fastq.gz", "_fastqc.zip") for w in config["units"][wildcards.sample]])
+        qc = lambda wildcards: expand(join(
+            config["fastqcdir"],
+            "{file}"),
+            file = [w.replace(".fastq.gz", "_fastqc.zip")
+                for w in config["units"][wildcards.sample]])
     output:
         join(config["bamdir"], config["refseq"]["id"], "{sample}.bam")
     log:
