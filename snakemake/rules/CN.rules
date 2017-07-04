@@ -1,0 +1,37 @@
+# Snakemake rules for estimating copy numbers
+#
+# Author: Maurits Evers
+# License: GPLv3
+# Original date: 04-07-2017
+# Last changed: 04-07-2017
+
+
+rule estimate_CN:
+    input:
+        files = expand(join(
+            config["analysisdir"],
+            config["refseq"]["id"],
+            "samtools/bedcov/cov_genome_w{window}_s{step}_{sample}.bed"),
+            window = config["bedtools"]["window_size"],
+            step = config["bedtools"]["window_step"],
+            sample = config["units"].keys())
+    output:
+        join(
+            config["analysisdir"],
+            config["refseq"]["id"],
+            "CN/CN_noZeros.pdf")
+    log: "logs/estimate_CN.log"
+    version: "1.0"
+    params:
+        cmd = "Rscript scripts/estimate_CN.R",
+        inp = lambda wildcards, input: ",".join(input),
+        out = join(config["analysisdir"], config["refseq"]["id"], "CN")
+    shell:
+        """
+            {params.cmd} \
+            -i {params.inp} \
+            -o {params.out} \
+            --skipZeros \
+            --plotCoverage \
+            --saveRData &> {log}
+        """

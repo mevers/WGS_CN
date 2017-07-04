@@ -8,7 +8,7 @@
 # Author: Maurits Evers
 # License: GPLv3
 # Original date: 22-10-2016
-# Last changed: 16-03-2017
+# Last changed: 03-07-2017
 
 
 # Sort and index BAM file
@@ -67,4 +67,34 @@ rule flagstat_bam:
     shell:
         """
             {params.cmd} flagstat {input} > {output}
+        """
+
+
+# Calculate sum of per-base read depths per BED region
+# Note: There is some confusion about what samtools bedcov actually
+# calculates (see e.g. https://github.com/samtools/samtools/issues/588).
+# According to the github issue, samtools bedcov calculates the sum of
+# per-base coverage per BED region (as opposed to the sum of reads that
+# overlap with a BED region).
+rule samtools_bedcov:
+    input:
+        BED = join(
+            config["analysisdir"],
+            config["refseq"]["id"],
+            "bedtools/{annot}.bed"),
+        BAM = join(
+            config["bamdir"],
+            config["refseq"]["id"],
+            "{sample}.sorted.dedup.bam")
+    output:
+        join(
+            config["analysisdir"],
+            config["refseq"]["id"],
+            "samtools/bedcov/cov_{annot}_{sample}.bed")
+    params:
+        cmd = config["samtools"]["cmd"]
+    version: "1.0"
+    shell:
+        """
+            {params.cmd} bedcov {input.BED} {input.BAM} > {output}
         """

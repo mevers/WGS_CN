@@ -1,0 +1,13 @@
+[Tue Jul 04 2017 13:25:43] Parameter summary
+ Input          = analysis/GRCh38+rDNA_repeat/samtools/bedcov/cov_genome_w10000_s1000_Z38.bed
+ Input          = analysis/GRCh38+rDNA_repeat/samtools/bedcov/cov_genome_w10000_s1000_TOV.bed
+ outdir         = analysis/GRCh38+rDNA_repeat/CN
+ skipZeros      = TRUE
+ plotCoverage   = TRUE
+ saveRData      = TRUE
+[Tue Jul 04 2017 13:25:43] Calculating mean coverage and estimating copy numbers.
+[Tue Jul 04 2017 13:26:50] Generated coverage plot analysis/GRCh38+rDNA_repeat/CN/boxplot_cov_genome_w10000_s1000_Z38_noZeros.pdf.
+[Tue Jul 04 2017 13:26:50] Saved results in analysis/GRCh38+rDNA_repeat/CN/CN_cov_genome_w10000_s1000_Z38_noZeros.RData.
+[Tue Jul 04 2017 13:27:28] Generated coverage plot analysis/GRCh38+rDNA_repeat/CN/boxplot_cov_genome_w10000_s1000_TOV_noZeros.pdf.
+[Tue Jul 04 2017 13:27:28] Saved results in analysis/GRCh38+rDNA_repeat/CN/CN_cov_genome_w10000_s1000_TOV_noZeros.RData.
+[Tue Jul 04 2017 13:27:28] Producing plots.

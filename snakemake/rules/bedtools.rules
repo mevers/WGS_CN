@@ -15,7 +15,7 @@
 # Author: Maurits Evers
 # License: GPLv3
 # Original date: 27-06-2017
-# Last changed: 27-06-2017
+# Last changed: 04-07-2017
 
 
 # Estimate genome coverage
@@ -30,7 +30,7 @@ rule bedtools_genome_coverage:
         join(
             config["analysisdir"],
             config["refseq"]["id"],
-            "coverage/coverage_{sample}.bed")
+            "bedtools/cov_genome_perbp_{sample}.bed")
     params:
         cmd = config["bedtools"]["cmd"],
         ref = REF
