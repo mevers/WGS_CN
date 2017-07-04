@@ -68,18 +68,26 @@ BAM_INSERT_SIZE = expand(join(config["analysisdir"], config["refseq"]["id"], \
 ALL_BAM_QC = BAM_FLAGSTAT + BAM_INSERT_SIZE
 
 # BedTools
+#REF_BED = expand(join(
+#    config["analysisdir"],
+#    config["refseq"]["id"],
+#    "bedtools/cov_genome_w{window}_s{step}_{sample}.bed"),
+#    window = config["bedtools"]["window_size"],
+#    step = config["bedtools"]["window_step"],
+#    sample = config["units"].keys())
+#
+#REF_BED = expand(join(
+#    config["analysisdir"],
+#    config["refseq"]["id"],
+#    "bedtools/cov_genome_perbp_{sample}.bed"),
+#    sample = config["units"].keys())
+
 REF_BED = expand(join(
     config["analysisdir"],
     config["refseq"]["id"],
-    "bedtools/cov_genome_w{window}_s{step}_{sample}.bed"),
+    "samtools/bedcov/cov_genome_w{window}_s{step}_{sample}.bed"),
     window = config["bedtools"]["window_size"],
     step = config["bedtools"]["window_step"],
-    sample = config["units"].keys())
-
-REF_BED2 = expand(join(
-    config["analysisdir"],
-    config["refseq"]["id"],
-    "bedtools/cov_genome_perbp_{sample}.bed"),
     sample = config["units"].keys())
 
 # deepTools targets
@@ -98,6 +106,13 @@ QUALIMAP2 = expand(join(config["analysisdir"], config["refseq"]["id"], "qualimap
      sample = config["units"].keys())
 
 
+R_CN = expand(join(
+    config["analysisdir"],
+    config["refseq"]["id"],
+    "CN/CN_noZeros.pdf"),
+    window = config["bedtools"]["window_size"],
+    step = config["bedtools"]["window_step"])
+
 
 #for smp in ALL_FASTQ_SS:
 #    message("Sample " + smp + " will be created")
@@ -113,6 +128,7 @@ include: "rules/reference.rules"
 include: "rules/fastq.rules"
 include: "rules/alignment.rules"
 include: "rules/bam.rules"
+include: "rules/CN.rules"
 
 
 #######################################################
@@ -122,7 +138,7 @@ include: "rules/bam.rules"
 # Input fastq files
 rule all:
     input:
-        ALL_FASTQC, ALL_BAM_QC, REF_BED, REF_BED2
+        ALL_FASTQC, ALL_BAM_QC, REF_BED, R_CN
 #          ALL_BAM_QC + ALL_MACS,
 #          DT_ALL,
 #          QUALIMAP,

@@ -90,7 +90,7 @@ rule samtools_bedcov:
         join(
             config["analysisdir"],
             config["refseq"]["id"],
-            "samtools/bedcov/cov_{annot}_{sample}.txt")
+            "samtools/bedcov/cov_{annot}_{sample}.bed")
     params:
         cmd = config["samtools"]["cmd"]
     version: "1.0"

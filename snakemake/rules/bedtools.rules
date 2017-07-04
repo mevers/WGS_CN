@@ -1,4 +1,3 @@
-
 # Snakemake rules involving bedtools
 # http://bedtools.readthedocs.io/en/latest/
 #
@@ -16,7 +15,7 @@
 # Author: Maurits Evers
 # License: GPLv3
 # Original date: 27-06-2017
-# Last changed: 27-06-2017
+# Last changed: 04-07-2017
 
 
 # Estimate genome coverage
