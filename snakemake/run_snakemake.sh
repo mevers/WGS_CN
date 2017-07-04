@@ -1,9 +1,13 @@
 #!/bin/bash
 
+# Make graphs
 snakemake --dag | dot -Tpdf > dag.pdf
-snakemake --rulegraph | dot -Tpdf > rulegraph.pdf
+snakemake --dag | dot -Tpng > dag.png
+snakemake --rulegraph | dot -Tpdf -Gratio=0.5 > rulegraph.pdf
+snakemake --rulegraph | dot -Tpng -Gratio=0.5 > rulegraph.png
 snakemake --rulegraph > rulegraph.dot
 
+# Run snakemake
 snakemake --configfile config.yaml \
 	  --snakefile Snakefile \
 	  --jobs 10 \
