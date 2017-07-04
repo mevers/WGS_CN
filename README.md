@@ -4,7 +4,7 @@ This GitHub repository contains the `snakemake` workflow to estimate mitochondri
 
 Copy numbers are estimated from a comparison of mean coverage across the rDNA/mtDNA and the autosomal DNA. For details see [Qian et al., Bioinformatics 33, 1399 (2017)](https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btw835) and [Ding et al., PLoS Genet. 14, e1005306 (2015)](https://www.ncbi.nlm.nih.gov/pubmed/26172475).
 
-Note that neither raw sequencing nor reference data are provided, and as such the repository does not constitute a self-contained, reproducible analysis workflow. Please contact Maurits Evers [Maurits Evers](mailto:maurits.evers@anu.edu.au) for details.
+Note that neither raw sequencing nor reference data are provided, and as such the repository does not constitute a self-contained, reproducible analysis workflow. Please contact [Maurits Evers](mailto:maurits.evers@anu.edu.au) for details.
 
 # Genome reference
 
