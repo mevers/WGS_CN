@@ -8,7 +8,10 @@ rawData/TOV*
 rawData/Z38*
 
 # Analysis
-analysis/
+analysis/GRCh38+rDNA_repeat/bedtools
+analysis/GRCh38+rDNA_repeat/picard-tools
+analysis/GRCh38+rDNA_repeat/samtools
+
 
 # Reference
 ref/

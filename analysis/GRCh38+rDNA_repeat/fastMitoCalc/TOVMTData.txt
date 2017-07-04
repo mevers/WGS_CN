@@ -1,0 +1,5 @@
+mt_copy_number_avg: 1431.03
+mt_coverage: 904.387
+autosomal_coverage: 1.26397
+actual basepairs covered by reads: 999940000
+chrom_used_for_autosomal_coverage: 1-22
