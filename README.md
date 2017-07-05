@@ -6,7 +6,29 @@ Copy numbers are estimated from a comparison of mean coverage across the rDNA/mt
 
 Note that neither raw sequencing nor reference data are provided, and as such the repository does not constitute a self-contained, reproducible analysis workflow. Please contact [Maurits Evers](mailto:maurits.evers@anu.edu.au) for details.
 
-# Genome reference
+## Workflow DAG
+
+<center><img src="snakemake/dag.png"></center>
+
+
+## Dependencies
+
+In brackets are version numbers that were used at the time of the analysis.
+
+* bedtools (2.25.0-24-g3d31735-dirty)
+* bowtie2 (2.2.6)
+* FastQC (0.10.1)
+* picard-tools (2.7.1-SNAPSHOT)
+* QualiMap (2.2.1)
+* R (3.3.2) with the following packages:
+    * optparse (1.3.2)
+    * ggplot2 (2.1.0)
+    * reshape2 (1.4.1)
+* samtools (1.3.1)
+
+
+
+## Genome reference
 
 [Ensembl](ftp://ftp.ensembl.org/pub/release-89/fasta/homo_sapiens/dna/) provides the following two main genome assembly files.
 
@@ -50,7 +72,7 @@ rDNA_repeat	42999	3139759365	70	71
 ```
 
 
-# Coverage calculation
+## Coverage calculation
 
 The general computational problem corresponds to calculating read depth (or coverage) for genomic regions defined in a BED file, based on a BAM read alignment file.
 
