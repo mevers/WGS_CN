@@ -243,7 +243,7 @@ names(CN) <- gsub("(cov_genome_w\\d+_s\\d+_|.bed)", "", basename(fn));
 ## ------------------------------------------------------------------------
 # Prepare for plotting
 cat(sprintf(
-    "%s Producing plots.\n",
+    "%s Producing final plots.\n",
     ts()));
 meanCN <- lapply(CN, function(x) x$CN);
 df <- melt(meanCN, id.vars = c("what", "mean", "se"));
@@ -272,5 +272,5 @@ gg <- gg + theme(
 ggsave(
     sprintf("%s/CN_%s.pdf", outdir, flagZeros),
     gg,
-    width = 7,
-    height = 5);
+    width = 8,
+    height = 6);

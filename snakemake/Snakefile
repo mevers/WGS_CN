@@ -84,8 +84,8 @@ R_CN = expand(join(
     step = config["bedtools"]["window_step"])
 
 
-#for smp in ALL_FASTQ_SS:
-#    message("Sample " + smp + " will be created")
+for smp in ALL_BAM:
+    message("Sample " + smp + " will be created")
 
 
 

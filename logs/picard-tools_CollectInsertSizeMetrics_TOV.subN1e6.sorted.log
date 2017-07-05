@@ -1,0 +1,7 @@
+[Wed Jul 05 09:56:28 AEST 2017] picard.analysis.CollectInsertSizeMetrics HISTOGRAM_FILE=analysis/GRCh38+rDNA_repeat/picard-tools/insert_size/insert_size_TOV.subN1e6.sorted.pdf INPUT=alignment/GRCh38+rDNA_repeat/TOV.subN1e6.sorted.bam OUTPUT=analysis/GRCh38+rDNA_repeat/picard-tools/insert_size/insert_size_TOV.subN1e6.sorted.txt    DEVIATIONS=10.0 MINIMUM_PCT=0.05 METRIC_ACCUMULATION_LEVEL=[ALL_READS] INCLUDE_DUPLICATES=false ASSUME_SORTED=true STOP_AFTER=0 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json
+[Wed Jul 05 09:56:28 AEST 2017] Executing as mevers@compute-2-6.local on Linux 2.6.32-504.16.2.el6.x86_64 amd64; Java HotSpot(TM) 64-Bit Server VM 1.8.0_91-b14; Picard version: 2.7.1-SNAPSHOT
+INFO	2017-07-05 09:56:32	RExecutor	Executing R script via command: Rscript /tmp/mevers/script4155792459322687055.R /home/mevers/Projects/CN_WGS/analysis/GRCh38+rDNA_repeat/picard-tools/insert_size/insert_size_TOV.subN1e6.sorted.txt /home/mevers/Projects/CN_WGS/analysis/GRCh38+rDNA_repeat/picard-tools/insert_size/insert_size_TOV.subN1e6.sorted.pdf TOV.subN1e6.sorted.bam
+INFO	2017-07-05 09:56:32	ProcessExecutor	null device 
+INFO	2017-07-05 09:56:32	ProcessExecutor	          1 
+[Wed Jul 05 09:56:32 AEST 2017] picard.analysis.CollectInsertSizeMetrics done. Elapsed time: 0.07 minutes.
+Runtime.totalMemory()=1015021568

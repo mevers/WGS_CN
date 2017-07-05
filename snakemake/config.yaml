@@ -23,6 +23,13 @@ units:
         TOV:
                 - TOV/TOV-112D_GCCAAT_L002_R1_001.fastq.gz
                 - TOV/TOV-112D_GCCAAT_L002_R2_001.fastq.gz
+        Z38.subN1e6:
+                - Z38_sub1e6/Z38_CTTGTA_L002_R1_001_subN1e6.fastq.gz
+                - Z38_sub1e6/Z38_CTTGTA_L002_R2_001_subN1e6.fastq.gz
+        TOV.subN1e6:
+                - TOV_sub1e6/TOV-112D_GCCAAT_L002_R1_001_subN1e6.fastq.gz
+                - TOV_sub1e6/TOV-112D_GCCAAT_L002_R2_001_subN1e6.fastq.gz
+
 
 
 refseq:
