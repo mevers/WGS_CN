@@ -1,13 +1,19 @@
-[Tue Jul 04 2017 13:25:43] Parameter summary
+[Wed Jul 05 2017 10:19:47] Parameter summary
+ Input          = analysis/GRCh38+rDNA_repeat/samtools/bedcov/cov_genome_w10000_s1000_Z38.subN1e6.bed
+ Input          = analysis/GRCh38+rDNA_repeat/samtools/bedcov/cov_genome_w10000_s1000_TOV.subN1e6.bed
  Input          = analysis/GRCh38+rDNA_repeat/samtools/bedcov/cov_genome_w10000_s1000_Z38.bed
  Input          = analysis/GRCh38+rDNA_repeat/samtools/bedcov/cov_genome_w10000_s1000_TOV.bed
  outdir         = analysis/GRCh38+rDNA_repeat/CN
  skipZeros      = TRUE
  plotCoverage   = TRUE
  saveRData      = TRUE
-[Tue Jul 04 2017 13:25:43] Calculating mean coverage and estimating copy numbers.
-[Tue Jul 04 2017 13:26:50] Generated coverage plot analysis/GRCh38+rDNA_repeat/CN/boxplot_cov_genome_w10000_s1000_Z38_noZeros.pdf.
-[Tue Jul 04 2017 13:26:50] Saved results in analysis/GRCh38+rDNA_repeat/CN/CN_cov_genome_w10000_s1000_Z38_noZeros.RData.
-[Tue Jul 04 2017 13:27:28] Generated coverage plot analysis/GRCh38+rDNA_repeat/CN/boxplot_cov_genome_w10000_s1000_TOV_noZeros.pdf.
-[Tue Jul 04 2017 13:27:28] Saved results in analysis/GRCh38+rDNA_repeat/CN/CN_cov_genome_w10000_s1000_TOV_noZeros.RData.
-[Tue Jul 04 2017 13:27:28] Producing plots.
+[Wed Jul 05 2017 10:19:47] Calculating mean coverage and estimating copy numbers.
+[Wed Jul 05 2017 10:20:36] Generated coverage plot analysis/GRCh38+rDNA_repeat/CN/boxplot_cov_genome_w10000_s1000_Z38.subN1e6_noZeros.pdf.
+[Wed Jul 05 2017 10:20:36] Saved results in analysis/GRCh38+rDNA_repeat/CN/CN_cov_genome_w10000_s1000_Z38.subN1e6_noZeros.RData.
+[Wed Jul 05 2017 10:21:09] Generated coverage plot analysis/GRCh38+rDNA_repeat/CN/boxplot_cov_genome_w10000_s1000_TOV.subN1e6_noZeros.pdf.
+[Wed Jul 05 2017 10:21:09] Saved results in analysis/GRCh38+rDNA_repeat/CN/CN_cov_genome_w10000_s1000_TOV.subN1e6_noZeros.RData.
+[Wed Jul 05 2017 10:21:56] Generated coverage plot analysis/GRCh38+rDNA_repeat/CN/boxplot_cov_genome_w10000_s1000_Z38_noZeros.pdf.
+[Wed Jul 05 2017 10:21:56] Saved results in analysis/GRCh38+rDNA_repeat/CN/CN_cov_genome_w10000_s1000_Z38_noZeros.RData.
+[Wed Jul 05 2017 10:22:38] Generated coverage plot analysis/GRCh38+rDNA_repeat/CN/boxplot_cov_genome_w10000_s1000_TOV_noZeros.pdf.
+[Wed Jul 05 2017 10:22:38] Saved results in analysis/GRCh38+rDNA_repeat/CN/CN_cov_genome_w10000_s1000_TOV_noZeros.RData.
+[Wed Jul 05 2017 10:22:38] Producing plots.
