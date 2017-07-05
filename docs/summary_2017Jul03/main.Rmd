@@ -106,7 +106,9 @@ Note: We discard regions where $\text{coverage} = 0$. This is because we are wor
 ```{r, echo=FALSE, dev.args = list(bg = "transparent")}
 fn <- c(
   "CN_cov_genome_w10000_s1000_TOV_noZeros.RData", 
-  "CN_cov_genome_w10000_s1000_Z38_noZeros.RData");
+  "CN_cov_genome_w10000_s1000_Z38_noZeros.RData",
+  "CN_cov_genome_w10000_s1000_TOV.subN1e6_noZeros.RData",
+  "CN_cov_genome_w10000_s1000_Z38.subN1e6_noZeros.RData");
 CN <- lapply(fn, function(x) {
   load(x);
   get("ret");
@@ -147,16 +149,16 @@ References:
 1. [Qian et al., Bioinformatics 33, 1399 (2017)](https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btw835)
 2. [Program website](https://lgsun.irp.nia.nih.gov/hsgu/software/mitoAnalyzer/index.html)
 
-**Results suggest that inferred mtDNAcopy numbers are consistent with copy numbers estimated using existing methods. Consequently, inferred rDNA copy numbers are expected to be reasonable estimates.**
+**Results suggest that inferred mtDNA copy numbers are consistent with copy numbers estimated using existing methods. Consequently, inferred rDNA copy numbers are expected to be reasonable estimates.**
 
 
 ## Comparison with fastMitoCalc 2
 
-```{r echo=FALSE}
+```{r echo=FALSE, dev.args = list(bg = "transparent")}
 df <- cbind.data.frame(
   what = c("fastMitoCalc", "fastMitoCalc", "This work", "This work"),
   L1 = c("TOV", "Z38", "TOV", "Z38"),
-  mean = c(1431, 2727, df[df$what == "MT", 2]));
+  mean = c(1431, 2727, df[df$what == "MT" & grepl("(^TOV$|^Z38$)", df$L1), 2]));
 gg <- ggplot(df, aes(x = L1, y = mean));
 gg <- gg + geom_bar(stat = "identity");
 gg <- gg + geom_text(
@@ -174,6 +176,24 @@ gg <- gg + theme(
     legend.position = "bottom");
 gg;
 ```
+
+
+## Questions involving Jeannine's analysis
+
+1. Does Jeannine calculate CN per haploid or diploid genome? This might explain a factor 2 discrepancy.
+
+2. Does Jeannine consider only autosomal chromosomes, or also X, Y and MT? Especially including MT coverage will increase reference DNA coverage, which in turn will lead to much smaller CN estimates. 
+
+3. Does Jeannine filter zero coverage regions? Zero coverage regions might be due to (1) non-sequencable/non-mappable regions (telomeric, centromeric repeatitive regions), and (2) overall insufficient genome coverage. We should be able to control the latter sufficiently well, if read coverage is $\gg 1$. *Not* discarding regions with zero read coverage will lead to a lower mean autosomal diploid genome coverage. This in turn will lead to inflated CN estimates.
+
+
+## Comments/questions?
+
+1. **Are mean coverages sensible?** Inferred autosomal, mitochondrial and rDNA coverages are consistent with estimates from e.g. QualiMap. QualiMap's estimated mean coverages are slightly smaller, due to the inclusion of zero coverage regions.
+
+2. **Why the large differences between inferred CNs from the full and subsampled data?** It is not entirely clear to me why this is the case, and whether subsampling is a valid approach to explore the robustness of CN inference. For example, subsampling may introduce significant changes in mean coverages, and despite the method itself being robust, estimated CNs may differ significantly.
+
+3. **Do standard errors make sense?** Shown standard errors capture the technical (statistical) uncertainty of the inference method. Biological variability should be the main source of variability. Since there are no replicates, I cannot comment on the robustness of the estimates.
 
 
 # Appendix
@@ -203,6 +223,17 @@ Please contact Maurits Evers [maurits.evers@anu.edu.au](mailto:maurits.evers@anu
 <p style="margin-top:-1em">  </p>
 <center><img src="figures/boxplot_cov_genome_w10000_s1000_Z38_noZeros.png" style="width:750px;"></center>
 
+
+## Coverage TOV (subsampled)
+
+<p style="margin-top:-1em">  </p>
+<center><img src="figures/boxplot_cov_genome_w10000_s1000_TOV.subN1e6_noZeros.png" style="width:750px;"></center>
+
+
+## Coverage Z38 (subsampled)
+
+<p style="margin-top:-1em">  </p>
+<center><img src="figures/boxplot_cov_genome_w10000_s1000_Z38.subN1e6_noZeros.png" style="width:750px;"></center>
 
 <!-- ## Copy number estimates (including zero coverage) {-} -->
 
