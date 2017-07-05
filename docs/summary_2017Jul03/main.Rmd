@@ -1,7 +1,7 @@
 ---
 title: "Estimating ribosomal DNA copy number from whole-genome sequencing"
 author: "Maurits Evers"
-date: "03/07/2017"
+date: "Version 1.1 (`r format(Sys.time(), '%d %B %Y')`)"
 output:
   ioslides_presentation:
     widescreen: true
