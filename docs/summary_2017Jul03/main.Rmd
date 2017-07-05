@@ -190,7 +190,7 @@ Please contact Maurits Evers [maurits.evers@anu.edu.au](mailto:maurits.evers@anu
 ## Summary of snakemake analysis workflow
 
 <p style="margin-top:-1em">  </p>
-<center><img src="figures/rulegraph.png" style="width:400px;"></center>
+<center><img src="figures/dag.png" style="width:900px;"></center>
 
 ## Coverage TOV
 
