@@ -187,14 +187,28 @@ gg;
 3. Does Jeannine filter zero coverage regions? Zero coverage regions might be due to (1) non-sequencable/non-mappable regions (telomeric, centromeric repeatitive regions), and (2) overall insufficient genome coverage. We should be able to control the latter sufficiently well, if read coverage is $\gg 1$. *Not* discarding regions with zero read coverage will lead to a lower mean autosomal diploid genome coverage. This in turn will lead to inflated CN estimates.
 
 
-## Comments/questions?
+## Comments/questions 1
 
-1. **Are mean coverages sensible?** Inferred autosomal, mitochondrial and rDNA coverages are consistent with estimates from e.g. QualiMap. QualiMap's estimated mean coverages are slightly smaller, due to the inclusion of zero coverage regions.
+<ol>
+<li> **Why the large differences between inferred CNs from the full and subsampled data?** 
 
-2. **Why the large differences between inferred CNs from the full and subsampled data?** It is not entirely clear to me why this is the case, and whether subsampling is a valid approach to explore the robustness of CN inference. For example, subsampling may introduce significant changes in mean coverages, and despite the method itself being robust, estimated CNs may differ significantly.
+In general CN estimates will depend on the per-base coverage $cpb$, and the optimal CN estimate is given by the asymptotic behaviour for $cpb\to\infty$  
+$$
+\widehat{CN} = \lim_{cpb\to\infty}CN(cpb)\,.
+$$
+For data with a low $cpb$ value (e.g. around 0.05 for the subsampling data) we may introduce signficant changes in mean coverage because of low-coverage regions and through omitting zero-coverage regions; consequently, while the method itself is robust, estimated CNs may vary significantly. Without a thorough computational analysis, I would assume that per-base coverage should be around $> 1\times$ (or better $\gg 1\times$) to ensure convergence of $\widehat{CN}$.   
+</ol>
 
-3. **Do standard errors make sense?** Shown standard errors capture the technical (statistical) uncertainty of the inference method. Biological variability should be the main source of variability. Since there are no replicates, I cannot comment on the robustness of the estimates.
+## Comments/questions 2
 
+<ol start="2">
+<li> **Are mean coverages sensible?** Inferred autosomal, mitochondrial and rDNA coverages are consistent with estimates from e.g. QualiMap. QualiMap's estimated mean coverages are slightly smaller, due to the inclusion of zero coverage regions.
+
+The mean coverage of the TOV/Z38 libraries is around $1.5\times$.
+
+
+<li>**Do standard errors make sense?** Shown standard errors capture the technical (statistical) uncertainty of the inference method. Biological variability should be the main source of variability. Since there are no replicates, I cannot comment on the robustness of the estimates.
+</ol>
 
 # Appendix
 
